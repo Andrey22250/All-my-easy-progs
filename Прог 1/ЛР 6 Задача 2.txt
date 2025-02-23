@@ -1,0 +1,86 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#define N 10000
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int i, a[N], n, k, count, b, c[N], j, d, f;
+	printf("Работа с одномерным массивом\n");
+/*1 пункт*/
+	do
+	{
+		printf("\n1 пункт");
+		do
+		{
+			printf("\nВведите кол-во элементов n: ");
+			scanf("%d", &n);
+		} 
+		while (n<1);
+		for (i=0;i<n;i++)
+		{
+			do
+			{
+				printf("Введите %d элемент массива: ", i + 1);
+				scanf("%d", &a[i]);
+			} while (a[i] < 1);
+			
+		}
+		printf("\nМассив а: ");
+		for (i = 0; i < n; i++)
+			printf("%d ", a[i]);
+/*2 пункт*/
+		printf("\n\n2 пункт");
+		do
+		{
+			printf("\nВведите число k: ");
+			scanf("%d", &k);
+		} while (k < 0);
+		for (count = 1; count <= k; count++)
+		{
+			b = a[n - 1];
+			for (i = n-2; i>=0; i--)
+				a[i+1] = a[i];
+			a[0] = b;
+		}
+		printf("\nМассив а со сдвигом k: ");
+		for (i = 0; i < n; i++)
+			printf("%d ", a[i]);
+/*3 пункт*/
+		d = 0;
+		for (i=0;i<n;i++)
+		{
+			f = 1;
+			j = 2;
+			while (j<=sqrt(a[i]))
+			{
+				if (a[i] % j == 0) f = 0;
+				j++;
+			}
+			if (f && a[i]>1)
+			{
+				c[d] = a[i];
+				d++;
+			}
+		}
+		printf("\n\n3 пункт\n\nМассив а: ");
+		for (i = 0; i < n; i++)
+			printf("%d ", a[i]);
+		printf("\nМассив простых чисел: ");
+		for (i = 0; i < d; i++)
+			printf("%d ", c[i]);
+/*4 пункт*/
+		for(k=0;k<d-1;k++)
+			for(i=0;i<d-k-1;i++)
+				if (c[i] < c[i + 1])
+				{
+					b = c[i];
+					c[i] = c[i + 1];
+					c[i + 1] = b;
+				}
+		printf("\n\n4 пункт\nМассив упрорядоченных простых чисел: ");
+		for (i = 0; i < d; i++)
+			printf("%d ", c[i]);
+		printf("\n\nНажмите Enter для повторного запуска программы\nНажмите Esc для выхода из программы\n");
+	} while (_getch()!=27);
+}

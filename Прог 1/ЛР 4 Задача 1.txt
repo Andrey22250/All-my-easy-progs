@@ -1,0 +1,39 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int n, a, b, c, count = 0;
+	do
+	{
+		printf("Введите натуральную сумму n: ");
+		scanf("%d",&n);
+		if (n < 1)
+		{
+			printf("\nВведено неверное значение n\n\nНажмите любую клавишу для повторного ввода\nНажмите Esc для выхода из программы\n");
+		}
+		else
+		{
+			printf("\nВозможные варианты: ");
+			for (a=0;a<=n;a++)
+			{
+				for (b=0;b<=n;b++)
+				{
+					for (c = 0; c <= n; c++)
+					{
+						if (a + b * 3 + c * 5 == n)
+						{
+							count++;
+							printf("\n%d по 1, %d по 3, %d по 5", a, b, c);
+							break;
+						}
+					}
+				}
+			}
+			printf("\nКоличество всех вожножных вариантов: %d\n\nНажмите любую клавишу для повторного ввода\nНажмите Esc для выхода из программы\n", count);
+			count = 0;
+		}
+	} while (_getch() != 27);
+}

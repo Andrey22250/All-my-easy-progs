@@ -1,0 +1,104 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#define N 10
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int a[N][N], max[N], str[N], large[N], less[N], i, j, m, n, swap, k1, k2, k21, count;
+	printf("Обработка двумерного массива\n");
+	do
+	{
+//Ввод кол-ва элементов массива
+		do
+		{
+			printf("\nВведите кол-во столбцов и кол-во строк (не более 10): ");
+			scanf("%d%d", &n, &m);
+		} while ((n < 1 || n>10) || (m < 1 || m>10));
+//Ввод массива
+		printf("\nВведите элементы массива а(%d*%d) посточно\n", n, m);
+		for (i = 0; i < n; i++)
+		{
+			printf("%d строка: ", i + 1);
+			for (j = 0; j < m; j++)
+				scanf("%d", &a[i][j]);
+		}
+//Вывод исходного массива
+		printf("Ваш массив:\n");
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < m; j++)
+				printf("%d ", a[i][j]);
+			printf("\n");
+		}
+//Перестановка внутри строки		
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < m; j++)
+				str[j] = a[i][j];  //Создаём новую строку из строки матрицы
+			k1 = 0; k2 = 0; swap = str[0]; int Max = str[0];
+			for (j = 1; j < m; j++)
+			{
+				if (str[0] < str[j])  //Распределяем элементы строки по спискам
+				{
+					large[k1] = str[j];
+					k1++;
+					if (Max < str[j])
+						Max = str[j];
+				}
+				else
+				{
+					less[k2] = str[j];
+					k2++;
+				}
+			}
+/*Создаём новую строку с помощью списков*/
+			for (j = 0; j < k1; j++)  
+				str[j] = large[j];
+			str[k1] = swap;
+			for (j = k1+1,k21=0; j < m; j++,k21++)
+				str[j] = less[k21];
+			for (j = 0; j < m; j++)
+				a[i][j] = str[j];
+			for (j = i; j <= i; j++)
+				max[i] = Max;
+		}
+//Вывод массива, где произведена строчная сортировка
+		printf("Отсортированный массив:\n");
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < m; j++)
+				printf("%d ", a[i][j]);
+			printf("\n");
+		}
+//Сортировка строк по убыванию
+		for (count = 0; count < n; count++)
+		{
+			for (i = 0; i < n; i++)
+			{
+				if (max[i] < max[i + 1])
+				{
+					for (j = 0; j < m; j++)
+					{
+						swap = a[i][j];
+						a[i][j] = a[i + 1][j];
+						a[i + 1][j] = swap;
+					}
+					swap = max[i];
+					max[i] = max[i+1];
+					max[i + 1] = swap;
+				}
+			}
+		}
+/*Вывод массива, где строки рассортированы по убыванию максимальных элементов*/
+		printf("Массив, где строки рассортированы по убыванию максимальных элементов:\n");
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < m; j++)
+				printf("%d ", a[i][j]);
+			printf("\n");
+		}
+		printf("\nНажмите Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+	} while (_getch() != 27);
+}

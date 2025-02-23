@@ -1,0 +1,79 @@
+#include <string>
+#include <map>
+#include <iostream>
+#define MAX 25
+
+using namespace std;
+
+char stack[MAX];
+int UPst = 0; /* вершина стека */
+/* Затолкать элемент в стек. */
+void push(char i)
+{
+	if (UPst >= MAX) {
+		printf("Стек полон\n");
+		return;
+	}
+	stack[UPst] = i;
+	UPst++;
+}
+/* Вытолкнуть верхний элемент стека. */
+char pop(void)
+{
+	UPst--;
+	if (UPst < 0) {
+		printf("Стек пуст\n");
+		return 0;
+	}
+	return stack[UPst];
+}
+//Перевод в польскую запись
+string ToOPZ(string Normal)
+{
+	string newstr;	//создание новой строки
+	for(int i = 0; i < Normal.size(); i++)
+	{
+		char c = Normal[i];
+		if (isdigit(c))	//Если цифра - просто в строку
+		{
+			newstr += c;
+		}
+		else if (c == '(')	//Если открывающая скобка - в стек
+			push(c);
+		else if (c == ')')	//Если закрывающая скобка - достаём все знаки в строку и достаём скобку
+		{
+			while (UPst > 0 && stack[UPst-1] != '(')
+				newstr += pop();
+			pop();
+			while (stack[UPst - 1] == '*' || stack[UPst - 1] == '/')	//Проверка на наличие действия перед скобкой
+				newstr += pop();
+		}
+		else if (c == '*' || c == '/')	//Если умножить/делить - тогда проверяем на повторное наличие в стеке и отправляем в стек
+		{
+			if (stack[UPst - 1] == '*' || stack[UPst - 1] == '/')
+				newstr += pop();
+			push(c);
+		}
+		else if (c == '+' || c == '-')	//См. выше
+		{
+			while (stack[UPst-1] == '*' || stack[UPst-1] == '/' || stack[UPst - 1] == '+' || stack[UPst - 1] == '-')
+				newstr += pop();
+			push(c);
+		}
+	}
+	while (UPst > 0)	//Заносим все оставшиеся операторы из стека в выходную строку
+	{
+		newstr += pop();
+	}
+	return newstr;		//Возвращаем выражение в постфиксной записи
+}
+
+int main()
+{
+	setlocale(LC_ALL, "");
+	string expression, result;
+	cout << "Введите арефметическое выражение без пробелов: ";
+	cin >> expression;
+	result = ToOPZ(expression);
+	cout << "\nВыражение в обратной польской записи: " << result << endl;
+}

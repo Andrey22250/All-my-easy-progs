@@ -1,0 +1,96 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+#include <Windows.h>
+
+#define max_len 50
+
+int main()
+{
+	//Возможность вводить русские символы
+	SetConsoleCP(1251);
+	setlocale(LC_ALL, "rus");
+	int n, i, j;
+	struct sotrudniki  //Структура сострудников
+	{
+		char fam[max_len];
+		int obr;
+		union
+		{
+			struct {
+				int year;
+				char name[max_len];
+			}high;
+			int age;
+		}un;
+	}list[500], swap;
+	/*Ввод исходных данных*/
+	printf("Сотрудники предприятия\n\n");
+	do
+	{
+		printf("Введите количество сотрудников (не более 500): ");
+		scanf("%d", &n);
+		while (getchar() != '\n');
+	} while (n < 1 || n>500);
+	for (i = 0; i < n; i++)
+	{
+		do
+		{
+			printf("\nВведите информацию о %d сотруднике (фамилия и образование, где 1 - среднее, 2 - высшее): ", i + 1);
+			scanf("%s%d", &list[i].fam, &list[i].obr);
+			while (getchar() != '\n');
+		} while (list[i].obr < 1 || list[i].obr>2);
+		switch (list[i].obr)
+		{
+		case 2:
+		{
+			do
+			{
+				printf("Введите год окончания вуза и название учебного заведения: ");
+				scanf("%d%s", &list[i].un.high.year, &list[i].un.high.name);
+				while (getchar() != '\n');
+			} while (list[i].un.high.year<1900);
+		}
+		break;
+		case 1:
+		{
+			do
+			{
+				printf("Введите возраст сотрудника: ");
+				scanf("%d", &list[i].un.age);
+				while (getchar() != '\n');
+			} while (list[i].un.age<14);
+		}
+		break;
+		}
+	}
+	/*Вывод списка сотрудников*/
+	printf("\nСписок сотрудников:\n");
+	for (i = 0; i < n; i++)
+	{
+		switch (list[i].obr)
+		{
+		case 2: printf("%-20s Высшее %d %-15s", list[i].fam, list[i].un.high.year, list[i].un.high.name); break;
+		case 1: printf("%-20s Среднее %d", list[i].fam, list[i].un.age); break;
+		}
+		printf("\n");
+	}
+	/*Сортировка сотрудников со средним образованием*/
+	for (j = 0; j < n; j++)
+		for (i = j + 1; i < n; i++)
+			if (list[i].obr == 1 && list[j].obr == 1 && list[j].un.age > list[i].un.age)
+			{
+				swap = list[j];
+				list[j] = list[i];
+				list[i] = swap;
+			}
+	/*Вывод списка сотрудников с СО*/
+	printf("\nСотрудники со средним образованием:\n");
+	for (i = 0; i < n; i++)
+		if (list[i].obr == 1)
+		{
+			printf("%-20s Среднее %d", list[i].fam, list[i].un.age);
+			printf("\n");
+		}
+}

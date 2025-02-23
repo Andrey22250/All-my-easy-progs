@@ -1,0 +1,74 @@
+#include <iostream>
+#include <Windows.h>
+#define N 4
+
+using namespace std;
+
+int main() {
+	short int a[N][N], b[N][N], answer[N], ad[N], bd[N], i, j;
+
+	setlocale(LC_ALL, "");
+	for (i = 0; i < N; i++)		// Стандартый ввод матрицы
+	{
+		printf("Введите элементы %d строки: ", i + 1);
+		for (j = 0; j < N; j++)
+		{
+			cin >> a[i][j];
+			b[j][i] = a[i][j];
+		}
+	}
+	__asm
+	{
+		push 0		//Внести в стек 0, указывая на 1 элемент
+		mov ecx, N* N - 1	//Счётчик цикла max1
+		mov edx, 0	//Счётчик строк
+		mov ax, word ptr[a]	//Внести в eax 1 элемент массива
+		max1: inc edx		//Прибавить 1 к адресу элемента, т.е. выбор следующего элемента матрицы
+		mov bx, word ptr[a + edx * 2]	//Внести в bx следующий элемент массива
+		cmp ax, bx	//Сравнить ax и bx
+		jle maxf		//Переход пометке maxf, если ZF=0 или SF=1
+		loop max1		//Замкнуть цикл по метке max1
+		jmp add1		//Безусловный переход по метке add1
+
+		maxf : mov ax, bx		//Установить новый максимум
+		pop ebx			//Извлечь предыдущий адрес элемента
+		push edx		//Засунуть в стек новый адрес элемента
+		loop max1		//замкнуть цикл по метке max1
+
+		add1 : pop edx	//Извлечь из стека номер элемента
+		shr edx, 2		//разделить на 4, т.к. массив из 4 элементов - получим номер строки
+		movq mm0, qword ptr[a + edx * 8]	//Записать в mm0 строку с максимальным значением
+		movq qword ptr[ad], mm0				//Записать во временную переменную строку
+
+		push 0		//Процесс аналогичен
+		mov ecx, N* N - 1
+		mov edx, 0
+		mov ax, word ptr[b]
+		min1: inc edx
+		mov bx, word ptr[b + edx * 2]
+		cmp ax, bx
+		jge minf		//Переход по метке minf при SF=0 или ZF=1
+		loop min1
+		jmp add2
+
+		minf : mov ax, bx
+		pop ebx
+		push edx
+		loop min1
+
+		add2 : pop edx
+		shr edx, 2
+		movq mm0, qword ptr[b + edx * 8]	//Записать в mm0 строку с минимальным значением
+		movq qword ptr[bd], mm0		//Записать во временную переменную строку
+		movq mm0, qword ptr[ad]		//Запись в mm0 ad
+		PMULLW mm0, qword ptr[bd]	//Младшее умножение mm0 и bd
+		movq qword ptr[answer], mm0	//Запись в answer из mm0
+		emms			//Освободить регистры ММХ
+	}
+	cout << "\nРезультат операции: ";	//Вывод результата
+	for (i = 0; i < N; i++)
+	{
+		cout << answer[i] << " ";
+	}
+	cout << "\n\n";
+}

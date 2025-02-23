@@ -1,0 +1,860 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <Windows.h>
+//Файлы
+FILE* file1;
+FILE* file_temp;
+
+//Протопипы функций
+int password();
+int vvod();
+int vivod();
+int vvod_stroki();
+int change_str();
+int delete_str();
+int ask();
+
+int clean() //очистка ввода
+{
+	while (getchar() != '\n');
+	return 1;
+}
+
+int main()  //Основная программа
+{
+	SetConsoleCP(1251); //Возможность вводить русские буквы
+	setlocale(LC_ALL, "rus");
+	char n;
+	do
+	{
+		do
+		{
+			system("cls");
+			printf("Автовокзал. Междугородние рейсы.\n");
+			printf("\nСписок функций:\n1)Ввод и изменение строки\n2)Вывод расписания\n3)Запрос\n\nEsc - выход из программы\n\nВаш выбор: ");
+			n = _getch(); //Ввод символа без нажатия Enter
+			if (n != 27) //Из-за кода Esc
+				printf("%c", n);
+			Sleep(1000);  //Задержки для более удобного отображения
+			switch (n)  //Выбор варианта
+			{
+			case '1':
+			{
+				if (password() == 1)
+					vvod();  //Функция ввода
+			}
+			break;
+			case '2':  //Функция вывода списка
+			{
+				do {
+					system("cls");
+					if (vivod() == 1); //Проверка файловой системы
+					else  //Если возникли проблемы с файлами
+					{
+						system("cls");
+						printf("Ошибка при работе с файлами. Убедитесь в целостности файловой системы");
+						Sleep(1500);
+					}
+					Sleep(300);
+					printf("\nНажмите любую клавишу для выхода в главное меню: ");
+				} while (_getch() < 0);
+			}
+			break;
+			case '3': 
+			{
+				if (ask() == 1);
+				else
+				{
+					system("cls");
+					printf("Ошибка при работе с файлами. Убедитесь в целостности файловой системы");
+					Sleep(1500);
+				}
+			}; break;  //Функция для запроса
+			}
+		} while (n != 27);
+		Sleep(50);
+		system("cls");
+		printf("Вы уверены, что хотите выйти из программы?\n\nEnter - да\nEsc - отмена\n");
+	} while (_getch() != 13);  //Дополнительное подтверждение для выхода
+}
+
+int password()
+{
+	char pswd[15];
+	int i;
+	do
+	{
+		system("cls");  //Очистка экрана
+		printf("Введите пароль администратора: ");  //Ввод и принятие пароля
+		for (i = 0; pswd[i - 1] != 13 && i < 15; i++)
+		{
+			pswd[i] = _getch();
+			if (pswd[i] != 8 && pswd[i] != 13)
+				printf("*");
+			else if (pswd[i] == 8)
+			{
+				if (i > 0)
+					printf("\b \b");
+				if (i >= 1)
+					i -= 2;
+				else if (i == 0)
+					i -= 1;
+			}
+			else if (pswd[i] == 13);
+		}
+		pswd[i - 1] = '\0';
+		if (strcmp(pswd, "24071977F_x") == 0)  //Исходный пароль тут
+			break;
+		else
+			printf("\n\nВведён неверный пароль. \nНажмите Esc для выхода\nНажмите Enter для повторного ввода");
+	} while (_getch() != 27);
+	if (strcmp(pswd, "24071977F_x") == 0)
+		return 1;
+}
+
+int vvod()  //Функция ввода
+{
+	system("cls");
+	char way;
+	do
+	{
+		system("cls");
+		printf("Выберите функцию:\n1)Полный ввод отдельной строки\n2)Изменение существующей строки\n3)Полное удаление строки\n4)Просмотр списка\n\nEsc - выход в основное меню\n\nВаш выбор: ");
+		way = _getch();
+		if (way != 27)
+			printf("%c", way);
+		Sleep(700);
+		switch (way)  //Разбиение на подфункции
+		{
+		case '1': //Создание строки
+		{
+			if (vvod_stroki() == 1);
+			else
+			{
+				system("cls");
+				printf("Ошибка при работе с файлами. Убедитесь в целостности файловой системы");
+				Sleep(1500);
+			}
+		}; break;
+		case '2': //Изменение
+		{
+			if (change_str() == 1);
+			else
+			{
+				system("cls");
+				printf("Ошибка при работе с файлами. Убедитесь в целостности файловой системы");
+				Sleep(1500);
+			}
+		}; break;
+		case '3': //Удаление
+		{
+			if (delete_str() == 1);
+			else
+			{
+				system("cls");
+				printf("Ошибка при работе с файлами. Убедитесь в целостности файловой системы");
+				Sleep(1500);
+			}
+		}; break;
+		case '4':  //Вывод для администратора
+		{
+			do
+			{
+				system("cls");
+				if (vivod() == 1);
+				else
+				{
+					system("cls");
+					printf("Ошибка при работе с файлами. Убедитесь в целостности файловой системы");
+					Sleep(1500);
+				}
+				Sleep(300);
+				printf("\nНажмите любую клавишу для выхода в главное меню: ");
+			} while (_getch() < 0);
+			system("cls");
+		} break;
+		}
+	} while (way != 27);
+	system("cls");
+	printf("Возврат в главное меню, пожалуйста подождите...");
+	Sleep(700);
+	return 1;
+}
+
+int vvod_stroki()  //Функция добавления строки
+{
+	system("cls");
+	char way, cp, point[50];
+	int check, count, number, date[3], time[2], place;
+	float price;
+	file1 = fopen("File1.txt", "r");	//Первая попытка открытия файла
+	if (file1 == NULL)	//Если файл не найден
+	{
+		do
+		{
+			system("cls");
+			printf("Файл с записями не обнаружен, хотите создать его?\nEnter - да\nEsc - нет");
+			way = _getch();
+		} while (way != 13 && way != 27);
+		if (way == 13)	//Создание файла для записи
+		{
+			file1 = fopen("File1.txt", "w");	//Создание файла
+			if (file1 == NULL)
+				return -1;
+			fprintf(file1, "0\n");
+			fclose(file1);
+			file1 = fopen("File1.txt", "r");
+			if (file1 == NULL)
+				return -1;
+			Sleep(600);
+		}
+		else
+			return -1;
+	}
+	system("cls");
+	fscanf(file1, "%d\n", &count);	//Перемещение на строки с данными
+	fclose(file1);	//Закрытие потока
+	if (count<1000)
+	{
+		do
+		{
+			printf("Ввод строки\n");
+			printf("\nНажмите Enter для ввода строки\nНажмите Esc для выхода в меню ввода\n\nВаш выбор: ");
+			way = _getch();
+			Sleep(300);
+			system("cls");
+			if (way == 13 && count < 100)	//Копирование из файла1 во временный файл
+			{
+				file1 = fopen("File1.txt", "r");
+				if (file1 == NULL)
+					return -1;
+				file_temp = fopen("File_temp.txt", "w");
+				if (file_temp == NULL)
+					return -1;
+				rewind(file1);
+				fscanf(file1, "%d\n", &count);
+				cp = fgetc(file1);
+				while (cp != EOF)
+				{
+					fputc(cp, file_temp);
+					cp = fgetc(file1);
+				}
+				rewind(file1);
+				printf("Пути назад нет\n\n");  //Ввод строки по элементам
+				do
+				{
+					printf("Введите номер рейса: ");
+					check = scanf("%d", &number);
+					clean();
+				} while (number <= 0 || number >= 999999 || check != 1);
+				do
+				{
+					printf("Введите пункт назначения: ");
+					scanf("%s", &point);
+					clean();
+				} while (strlen(point) > 50);
+				do
+				{
+					printf("Введите дату отправления в формате dd.mm.yyyy: ");
+					check = scanf("%d.%d.%d", &date[0], &date[1], &date[2]);
+					clean();
+				} while ((date[0] > 31 || date[0] <= 0) || (date[1] <= 0 || date[1] > 12) || date[2] < 1900 || check != 3);
+				do
+				{
+					time[0] = time[1] = -1;
+					printf("Введите время отправления в формате hh:mm: ");
+					check = scanf("%d:%d", &time[0], &time[1]);
+					clean();
+				} while ((time[0] < 0 || time[0]>23) || (time[1] < 0 || time[1]>59) || check != 2);
+				do
+				{
+					printf("Введите общее количество мест: ");
+					check = scanf("%d", &place);
+					clean();
+				} while (place <= 0 || place >= 999999 || check != 1);
+				do
+				{
+					printf("Введите цену билета: ");
+					check = scanf("%f", &price);
+					clean();
+				} while (price <= 0 || check != 1);
+				(count)++;
+				fprintf(file_temp, "%d;%s;%d.%d.%d;%d:%d;%d;%.2f\n", number, point, date[0], date[1], date[2], time[0], time[1], place, price);	//Запись во временный файл
+				Sleep(550);
+				system("cls");
+				fclose(file1);
+				fclose(file_temp);
+				file1 = fopen("File1.txt", "w");	//Запись в основной файл из временного
+				if (file1 == NULL)
+					return -1;
+				file_temp = fopen("File_temp.txt", "r");
+				if (file_temp == NULL)
+					return -1;
+				fprintf(file1, "%d\n", count);
+				cp = fgetc(file_temp);
+				while (cp != EOF)
+				{
+					fputc(cp, file1);
+					cp = fgetc(file_temp);
+				}
+				fclose(file1);
+				fclose(file_temp);//Окончание работы
+			}
+		} while (way != 27 && count < 1000);
+	}
+	else    //Если слишком много строк
+	{
+		system("cls");
+		printf("Ошибка. Слишком много строк. Пожалуйста, удалите одну из строк списка.\n");
+		Sleep(2000);
+	}
+	/*Сообщения о возврате, будут такие и далее*/
+	system("cls");
+	printf("Возврат в меню изменений, пожалуйста подождите...");
+	Sleep(1500);
+	system("cls");
+	return 1;
+}
+
+
+int change_str()  //Функция изменения строки
+{
+	int count, list1, list3[3], list4[2],list5, j;
+	char list2[50];
+	float list6;
+	file1 = fopen("File1.txt", "r");
+	if (file1 == NULL)
+		return -1;
+	fscanf(file1, "%d\n", &count);
+	fclose(file1);
+	if (count > 0)
+	{
+		int str_num;
+		int str, i, flag, check, chk_num[1000];
+		char way, temp[150];
+		do
+		{
+			system("cls");
+			printf("Изменение существующей строки\n\n");
+			vivod();	//Делаем вывод исходного списка
+			file1 = fopen("File1.txt", "r");
+			if (file1 == NULL)
+				return -1;
+			fscanf(file1, "%d\n", &count);
+			printf("\nНажмите Enter для изменения информации о рейсе\nНажмите Esc для выхода в меню изменений");
+			way = _getch();
+			if (way == 13)
+			{
+				do {
+					printf("\n\nВведите номер рейса: ");  //Поиск по первому элементу
+					check = scanf("%d", &str_num);
+					clean();
+				} while (str_num <= 0 || str_num > 999999 || check != 1);
+				for (i = 0; i < count; i++)		//Заносим в массив номера рейсов
+				{
+					fscanf(file1, "%d;", &chk_num[i]);
+					fgets(temp, 100, file1);
+				}
+				rewind(file1);
+				for (i = flag = 0, str = -1; i < count && flag == 0; i++)	//Находим нужный элемент
+				{
+					fgets(temp, 100, file1);
+					if (str_num == chk_num[i])
+					{
+						
+						str = i;
+						flag = 1;
+					}
+				}
+				fscanf(file1, "%d;", &list1);	//Разбиваем нашу строку на части
+				for (j = 0; list2[j - 1] != ';'; j++)
+					fscanf(file1, "%c", &list2[j]);
+				list2[j - 1] = '\0';
+				fscanf(file1, "%d.%d.%d;", &list3[0], &list3[1], &list3[2]);
+				fscanf(file1, "%d:%d;", &list4[0], &list4[1]);
+				fscanf(file1, "%d;", &list5);
+				fscanf(file1, "%f\n", &list6);
+				if (str >= 0) //Изменение строки поэлементно
+				{
+					do
+					{
+						system("cls");
+						printf("Выбрана строка:\nНомер рейса  Пункт назначения  Дата отправления  Время отправления  Общее количество мест  Цена билета\n%-12d %-17.16s %.2d.%.2d.%-11d %.2d:%-15.2d %-22d %.2f\n", list1, list2, list3[0], list3[1], list3[2], list4[0], list4[1], list5, list6);
+						printf("\nВыберите элемент для изменения:\n1 - Номер рейса\n2 - Пункт назначения\n3 - Дата отправления\n4 - Время отправления\n5 - Общее количество мест\n6 - Цена билета\n\nВаш выбор: ");
+						flag = _getch();
+						if (flag != 27)
+							printf("%c", flag);
+					} while (flag < '0' || flag > '6');
+					switch (flag)  //Выбор действия и ввод соответствующего поля
+					{
+					case '1':
+						do
+						{
+							printf("\nВведите новый номер рейса: ");
+							check = scanf("%d", &list1);
+							clean();
+						} while (list1 <= 0 || list1 >= 999999 || check != 1);
+						break;
+					case '2':
+						do
+						{
+							printf("\nВведите новый пункт назначения: ");
+							scanf("%s", &list2);
+							clean();
+						} while (strlen(list2) > 50);
+						break;
+					case '3':
+						do
+						{
+							printf("\nВведите новую дату отправления в формате dd.mm.yyyy: ");
+							check = scanf("%d.%d.%d", &list3[0], &list3[1], &list3[2]);
+							clean();
+						} while ((list3[0] > 31 || list3[0] <= 0) || (list3[1] <= 0 || list3[1] > 12) || list3[2] < 1900 || check != 3);
+						break;
+					case '4':
+						do
+						{
+							list4[0] = list4[1] = -1;
+							printf("\nВведите новое время отправления в формате hh:mm: ");
+							check = scanf("%d:%d", &list4[0], &list4[1]);
+							clean();
+						} while ((list4[0] < 0 || list4[0]>23) || (list4[1] < 0 || list4[1]>59) || check != 2);
+						break;
+					case '5':
+						do
+						{
+							printf("\nВведите новое общее количество мест: ");
+							check = scanf("%d", &list5);
+							clean();
+						} while (list5 <= 0 || list5 >= 999999 || check != 1);
+						break;
+					case '6':
+						do
+						{
+							printf("\nВведите новую цену билета: ");
+							check = scanf("%f", &list6);
+							clean();
+						} while (list6 <= 0 || check != 1);
+						break;
+					}
+					file_temp = fopen("File_temp.txt", "w");
+					if (file_temp == NULL)
+						return -1;
+					rewind(file1);
+					fscanf(file1, "%d\n", &count);
+					for (i = flag = 0; i < count; i++)	//Записываем новый временный файл
+					{
+						if (chk_num[i] == str_num && flag == 0)
+						{
+							flag = 1;
+							fprintf(file_temp, "%d;%s;%d.%d.%d;%d:%d;%d;%.2f\n", list1, list2, list3[0], list3[1], list3[2], list4[0], list4[1], list5, list6);
+							fgets(temp, 150, file1);
+						}
+						else
+						{
+							fgets(temp, 150, file1);
+							fputs(temp, file_temp);
+						}
+					}
+					fclose(file1);
+					fclose(file_temp);
+					file1 = fopen("File1.txt", "w");	//Перенос из временного файла в основной
+					if (file1 == NULL)
+						return -1;
+					file_temp = fopen("File_temp.txt", "r");
+					if (file_temp == NULL)
+						return -1;
+					fprintf(file1, "%d\n", count);
+					char cp = fgetc(file_temp);
+					while (cp != EOF)
+					{
+						fputc(cp, file1);
+						cp = fgetc(file_temp);
+					}
+					fclose(file1);
+					fclose(file_temp);
+				}
+				else  //Сообщения ошибок
+				{
+					system("cls");
+					printf("Такой рейс отсутствует в расписании, повторите попытку");
+					Sleep(2000);
+				}
+			}
+		} while (way != 27);
+	}
+	else //Сообщения ошибок
+	{
+		system("cls");
+		printf("Ошибка. Нет строк для изменения.");
+	}
+	system("cls");
+	printf("Возврат в меню изменений, пожалуйста подождите...");
+	Sleep(1500);
+	system("cls");
+	return 1;
+}
+
+int delete_str()  //Функция удаления строки
+{
+	system("cls");
+	char way;
+	int count;
+	file1 = fopen("File1.txt", "r");
+	if (file1 == NULL)
+		return -1;
+	fscanf(file1, "%d\n", &count);
+	fclose(file1);
+	do
+	{
+		if (count >= 1)
+		{
+			int str_num, check, chk_num[1000];
+			int str, i, flag;
+			char temp[150];
+			do
+			{
+				printf("Удаление существующей строки\n\n");
+				vivod();
+				file1 = fopen("File1.txt", "r");
+				if (file1 == NULL)
+					return -1;
+				fscanf(file1, "%d\n", &count);
+				printf("\nДля удаления строки нажмите Enter\nДля выхода в меню изменений нажмите Esc\n");
+				way = _getch();
+				if (way == 13)
+				{
+					do
+					{
+						printf("\nВведите номер рейса: "); //Выбор строки
+						check = scanf("%d", &str_num);
+						clean();
+					} while (str_num < 0 || str_num >999999 || check != 1);
+					for (i = 0; i < count; i++)	//Заносим номера рейсов в массив
+					{
+						fscanf(file1, "%d;", &chk_num[i]);
+						fgets(temp, 100, file1);
+					}
+					rewind(file1);
+					for (i = flag = 0, str = -1; i < count && flag == 0; i++)	//Поиск нужного элемента
+					{
+						fgets(temp, 100, file1);
+						if (str_num == chk_num[i])
+						{
+							str = i;
+							flag = 1;
+						}
+					}
+					if (str != -1)
+					{
+						printf("\nВы уверены, что хотите удалить данную строку? Отменить выбор не получится\nНажмите Enter для удаления\nНажмите Esc для отмены\n");
+						way = _getch();  //Подтверждение
+						if (way == 13)
+						{
+							file_temp = fopen("File_temp.txt", "w");
+							rewind(file1);
+							fscanf(file1, "%d\n", &count);
+							for (i = flag = 0; i < count; i++)	//Записываем новый временный файл
+							{
+								if (chk_num[i] == str_num && flag == 0)
+								{
+									flag = 1;
+									fgets(temp, 150, file1);
+								}
+								else
+								{
+									fgets(temp, 150, file1);
+									fputs(temp, file_temp);
+								}
+							}
+							fclose(file1);
+							fclose(file_temp);
+							count--;	//Отнимаем 1 строку
+							file1 = fopen("File1.txt", "w");	//Перенос из временного файла в основной
+							if (file1 == NULL)
+								return -1;
+							file_temp = fopen("File_temp.txt", "r");
+							if (file_temp == NULL)
+								return -1;
+							fprintf(file1, "%d\n", count);
+							char cp = fgetc(file_temp);
+							while (cp != EOF)
+							{
+								fputc(cp, file1);
+								cp = fgetc(file_temp);
+							}
+							fclose(file1);
+							fclose(file_temp);
+							system("cls");
+							printf("Удаление успешно завершено");
+							Sleep(700);
+							system("cls");
+						}
+						else if (way == 27)
+						{
+							system("cls");
+							Sleep(300);
+						}
+						way = 13;
+					}
+					else //Сообщения ошибок
+					{
+						system("cls");
+						printf("Ошибка. Введена неверная строка. Пожалуйста, повторите попытку.");
+						Sleep(2000);
+						system("cls");
+					}
+				}
+				else
+					system("cls");
+			} while (way != 27 && count > 1);
+		}
+		else if (count == 0)  //Сообщение о ошибке
+		{
+			system("cls");
+			printf("Ошибка. Нет строк для удаления.");
+			Sleep(1500);
+			way = 27;
+		}
+		system("cls");
+		printf("Возврат в меню изменений, пожалуйста подождите...");
+		Sleep(1500);
+		system("cls");
+	} while (way != 27);
+	return 1;
+}
+
+int vivod()  //Функция вывода списка
+{
+	int count, list1, list3[3], list4[2], list5, j;
+	float list6;
+	char list2[50];
+	file1 = fopen("File1.txt", "r");
+	if (file1 == NULL)
+		return -1;
+	fscanf(file1, "%d\n", &count);
+	if (count > 0)
+	{
+		printf("Список рейсов:\n"); //Шапка
+		printf("\nНомер рейса  Пункт назначения  Дата отправления  Время отправления  Общее количество мест  Цена билета\n");
+		if (count > 0)
+			for (int i = 0; i < count; i++) //Строки
+			{
+				fscanf(file1, "%d;", &list1);
+				for (j = 0; list2[j-1] != ';';j++)
+					fscanf(file1, "%c", &list2[j]);
+				list2[j - 1] = '\0';
+				fscanf(file1, "%d.%d.%d;", &list3[0], &list3[1], &list3[2]);
+				fscanf(file1, "%d:%d;", &list4[0], &list4[1]);
+				fscanf(file1, "%d;", &list5);
+				fscanf(file1, "%f\n", &list6);
+				printf("%-12d %-17.16s %.2d.%.2d.%-11d %.2d:%-15.2d %-22d %.2f\n", list1, list2, list3[0], list3[1], list3[2], list4[0], list4[1], list5, list6);
+			}
+		Sleep(250);
+		fclose(file1);
+	}
+	else  //Сообщение о ошибке
+	{
+		printf("Ошибка. В расписании нет рейсов\n");
+		Sleep(850);
+	}
+	return 1;
+}
+
+int ask()  //Функция для запроса
+{
+	system("cls");
+	int list1, list3[3], list4[2], list5, j;
+	char list2[50];
+	float list6;
+	char way, way1, flag, f_point[50], temp[150];
+	float f_price;
+	int f_number, f_date[3], f_time[2], f_place, check, count;
+	int mass[100], i;
+	file1 = fopen("File1.txt", "r");
+	if (file1 == NULL)
+		return -1;
+	fscanf(file1, "%d\n", &count);
+	fclose(file1);
+	do { //Этот do отвечает за зацикливание всей функции
+		if (count > 0)
+		{
+			do // Этот do отвечает за накопление
+			{
+				system("cls");
+				printf("Запрос по списку\n\n");
+				vivod();
+				file1 = fopen("File1.txt", "r");
+				if (file1 == NULL)
+					return -1;
+				fscanf(file1, "%d\n", &count);
+				printf("\nНажмите Enter для выполнения запроса\nНажмите Esc для выхода в главное меню\n");
+				for (i = 0; i < count; i++)
+				{
+					fscanf(file1, "%d;", &mass[i]);
+					fgets(temp, 100, file1);
+				}
+				way = _getch();
+				way1 = 0;
+				Sleep(550);
+				if (way == 13 && way1 != 27)
+				{
+					do //Этот do отвечает за повторение поиска
+					{
+						rewind(file1);
+						fscanf(file1, "%d\n", &count);
+						do
+						{
+							printf("\nВыберите поле для поиска:\n1 - Номер рейса\n2 - Пункт назначения\n3 - Дата отправления\n4 - Время отправления\n5 - Общее количество мест\n6 - Цена билета\n\nВаш выбор: ");
+							flag = _getch();
+							if (flag != 27)
+								printf("%c", flag);
+						} while (flag < '0' || flag > '6');
+						Sleep(350);
+						switch (flag)  //Выбор поля
+						{
+						case '1':
+							do
+							{
+								printf("\nВведите номер рейса: ");
+								check = scanf("%d", &f_number);
+								clean();
+							} while (f_number <= 0 || f_number >= 999999 || check != 1);
+							break;
+						case '2':
+							do
+							{
+								printf("\nВведите пункт назначения: ");
+								scanf("%s", &f_point);
+								clean();
+							} while (strlen(f_point) > 50);
+							break;
+						case '3':
+							do
+							{
+								printf("\nВведите дату отправления в формате dd.mm.yyyy: ");
+								check = scanf("%d.%d.%d", &f_date[0], &f_date[1], &f_date[2]);
+								clean();
+							} while ((f_date[0] > 31 || f_date[0] <= 0) || (f_date[1] <= 0 || f_date[1] > 12) || f_date[2] < 1900 || check != 3);
+							break;
+						case '4':
+							do
+							{
+								f_time[0] = f_time[1] = -1;
+								printf("\nВведите время отправления, не позднее которого отправляется рейс, в формате hh:mm: ");
+								check = scanf("%d:%d", &f_time[0], &f_time[1]);
+								clean();
+							} while ((f_time[0] < 0 || f_time[0]>23) || (f_time[1] < 0 || f_time[1]>59) || check != 2);
+							break;
+						case '5':
+							do
+							{
+								printf("\nВведите максимальное общее количество мест: ");
+								check = scanf("%d", &f_place);
+								clean();
+							} while (f_place <= 0 || f_place >= 999999 || check != 1);
+							break;
+						case '6':
+							do
+							{
+								printf("\nВведите максимальную цену цену билета: ");
+								check = scanf("%f", &f_price);
+								clean();
+							} while (f_price <= 0 || check != 1);
+							break;
+						}
+						Sleep(300);
+						for (i = 0; i < count; i++)
+						{
+							fscanf(file1, "%d;", &list1);
+							for (j = 0; list2[j - 1] != ';'; j++)
+								fscanf(file1, "%c", &list2[j]);
+							list2[j - 1] = '\0';
+							fscanf(file1, "%d.%d.%d;", &list3[0], &list3[1], &list3[2]);
+							fscanf(file1, "%d:%d;", &list4[0], &list4[1]);
+							fscanf(file1, "%d;", &list5);
+							fscanf(file1, "%f\n", &list6);
+							switch (flag)  //Если не нашли - убираем из списка
+							{
+								case '1':
+								{
+									if (list1 != f_number)
+										mass[i] = -1;
+								}break;
+								case '2':
+								{
+									if (strcmp(list2, f_point) != 0)
+										mass[i] = -1;
+								}break;
+								case '3':
+								{
+									if (list3[0] != f_date[0] || list3[1] != f_date[1] || list3[2] != f_date[2])
+										mass[i] = -1;
+								}break;
+								case '4':
+								{
+										if ((list4[0] * 60 + list4[1]) > (f_time[0] * 60 + f_time[1]))
+											mass[i] = -1;
+								}break;
+								case '5':
+								{
+									if (list5 > f_place)
+										mass[i] = -1;
+								}break;
+								case '6':
+								{
+									if (list6 > f_price)
+										mass[i] = -1;
+								}break;
+							}
+						}
+						rewind(file1);
+						fscanf(file1, "%d\n", &count);
+						Sleep(700);
+						printf("\nРезультаты поиска:\n\n");
+						for (i = check = 0; i < count && check == 0; i++)
+							if (mass[i] > -1)
+								check = 1;
+						if (check == 1)
+							printf("Номер рейса  Пункт назначения  Дата отправления  Время отправления  Общее количество мест  Цена билета\n");
+						for (i = 0, check = 0; i < count; i++)
+						{
+							if (mass[i] != -1)
+							{
+								fscanf(file1, "%d;", &list1);
+								for (j = 0; list2[j - 1] != ';'; j++)
+									fscanf(file1, "%c", &list2[j]);
+								list2[j - 1] = '\0';
+								fscanf(file1, "%d.%d.%d;", &list3[0], &list3[1], &list3[2]);
+								fscanf(file1, "%d:%d;", &list4[0], &list4[1]);
+								fscanf(file1, "%d;", &list5);
+								fscanf(file1, "%f\n", &list6);
+								check = 1;
+								printf("%-12d %-17.16s %.2d.%.2d.%-11d %.2d:%-15.2d %-22d %.2f\n", list1, list2, list3[0], list3[1], list3[2], list4[0], list4[1], list5, list6);
+							}
+							else
+								fgets(temp, 150, file1);
+						}
+						if (check == 0)
+							printf("Поиск не выдал результата.\n");
+						Sleep(800);
+						printf("\nНажмите Enter для повторного ввода\nНажмите Esc для выхода в меню запроса\n");
+						way1 = _getch();
+					} while (way1 != 27);
+				}
+			} while (way != 27);
+		}
+		if (count == 0)  //Сообщение о ошибке
+		{
+			system("cls");
+			printf("Ошибка. Нет введённых строк.");
+			Sleep(1200);
+			way = 27;
+		}
+	} while (way != 27);
+	system("cls");
+	printf("Возврат в главное меню, пожалуйста подождите...");
+	Sleep(1200);
+	return 1;
+}

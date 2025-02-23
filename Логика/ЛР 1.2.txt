@@ -1,0 +1,27 @@
+#include <iostream>
+
+using namespace std;
+
+int Fuction(int x, int y)
+{
+	int result = 0;
+	if (x * 2 > 2) result = x * 2 - 2;
+	else result = 0;
+	for (int i = 0; i < y; i++)
+	{
+		if (i > result)
+			result = x * x + (i - result);
+		else
+			result = x * x;
+	}
+	return result;
+}
+
+int main()
+{
+	int x, y, result;
+	cout << "x = "; cin >> x;
+	cout << "y = "; cin >> y;
+	result = Fuction(x, y);
+	cout << "f(" << x << ", " << y << ") = " << result << endl;
+}

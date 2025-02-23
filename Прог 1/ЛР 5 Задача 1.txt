@@ -1,0 +1,57 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <math.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	printf("Бесконечное суммирование с заданной точностью");
+	do
+	{
+		double x1, x2, h, e, y, a, c, x;
+		int n,b;
+		printf("\nВведите x1, x2: ");
+		scanf("%le%le",&x1,&x2);
+		if (x1 > x2 || x1<=1)
+			printf("\nВведён неверный диапазон\n\nНажмите Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+		else
+		{
+			printf("\nВведите шаг: ");
+			scanf("%le", &h);
+			if (h <= 0)
+				printf("\nВведён неверный шаг\n\nНажмите Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+			else
+			{
+				printf("\nВведите точность: ");
+				scanf("%le", &e);
+				if (e > 1 || e<=0)
+					printf("\nВведена неверная точность\n\nНажмите Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+				else
+				{
+					x = x1;
+					printf("\n***************************");
+					printf("\n*      x       *       y      * ");
+					while (x <= x2)
+					{
+						c = x;
+						a = 1.0 / c;
+						y = 0;
+						b = 1;
+						for (n = 2; a > e; n++)
+						{
+							y = y + a;
+							b = b + 2;
+							c = c * x * x;
+							a = 1.0 / (b * c);
+						}
+						printf("\n* %8.10f * %8.10f *", x, y);
+						x = x + h;
+					}
+					printf("\n***************************\n\nНажмите Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+				}
+			}
+
+		}
+	} while (_getch() != 27);
+}

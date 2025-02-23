@@ -1,0 +1,40 @@
+XX		DCD		4
+NN		DCD		0
+YY		FILL		4
+		
+		ADR		R5, XX
+		LDR		R5, [R5]
+		ADR		R6, NN
+		LDR		R6, [R6]
+		CMP		R6, #0
+		BLEQ		EXIT
+		MOV		R7, R5
+		MOV		R8, R5
+		SUB		R6, R6, #1
+LOOP
+		BL		MULTI
+		MOV		R5, R4
+		MOV		R7, R8
+		SUB		R6, R6, #1
+		CMP		R6, #0
+		BLNE		LOOP
+NXT		LSR		R4, R4, #1
+		MOV		R5, R4
+		ADR		R7, NN
+		LDR		R7, [R7]
+		BL		MULTI
+EXIT
+		ADR		R0, YY
+		STR		R4, [R0]
+		END
+		
+		;Умножение
+MULTI
+		MOV		R4, #0 ; R4=0
+MULTLOOP
+		TST		R7, #1 ; проверяем младший бит множителя
+		ADDNE	R4, R4, R5 ; если он равен 1, добавляем множимое к результату
+		LSL		R5, R5, #1 ; сдвиг влево первого множителя
+		LSRS		R7, R7, #1 ; сдвиг второго множителя вправо
+		MOVEQ	PC, LR ; если второй множитель 0, возвращаемся из подпрограммы
+		B		MULTLOOP ; на начало цикла

@@ -1,0 +1,26 @@
+#include "stdio.h"
+
+int main() {
+	int x, n, result;
+
+	printf("Input X, N: ");
+	scanf("%d %d", &x, &n);
+	__asm {
+		mov eax, 0
+		cmp n, 1
+		Jl res
+		Mov eax, x
+		Mov ebx, n
+		chk: Cmp bx, 1
+		Jle end
+		Imul x
+		Sub bx, 1
+		JMP chk
+		end : Imul n
+		cdq
+		Mov ebx, 2
+		Idiv ebx
+		res: Mov result, eax
+	}
+	printf("\n\nResult: %d\n", result);
+}

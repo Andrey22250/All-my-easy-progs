@@ -1,0 +1,96 @@
+#include <iostream>
+#include <mpi.h>
+#include <Windows.h>
+#define N 256
+
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+	double start_time = 0, time_taken = 0;
+	int rank, size;
+	int a[N][N], answer[N], i, j, mina, maxa, maxp, minp, choice;
+	int n;
+	MPI_Init(&argc, &argv); //Функции передаются указатели на аргумкенты argc и argv, из которой системой извлек и передаются в пар процессы параметры заупска программы
+	// Получение общего количества процессов 
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
+	// Получение номера текущего процесса
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	setlocale(LC_ALL, "");
+	// Ввод размера массива на процессе 0 
+	if (rank == 0)	
+	{
+		do {
+			cout << "Введите размерность матрицы n*n: ";
+			cin >> n;
+		} while (n > 256);
+	}
+	MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	if(rank == 0)	//Заполнение массива на процессе 0
+	{
+		do {
+			cout << "Выберите метод заполнения:\n1 - Вручную\n2 - Автоматически\nВаш выбор: ";
+			cin >> choice;
+		} while (choice < 1 || choice > 2);
+		if (choice == 1)
+		{
+			for (i = 0; i < n; i++)		// Стандартый ввод матрицы
+			{
+				printf("Введите элементы %d строки: ", i + 1);
+				for (j = 0; j < n; j++)
+				{
+					cin >> a[i][j];
+				}
+			}
+		}
+		else //Заполнение автоматически
+		{
+			srand(time(NULL));
+			for (i = 0; i < n; i++) {
+				for (j = 0; j < n; j++) {
+					a[i][j] = rand() % 100;
+				}
+			}
+		}
+	}
+	//Команда MPI_Barrier служит для синхронизации процессов в рамках группы. Это означает, что все процессы группы будут ждать друг друга до момента, когда каждый из них достигнет данной команды
+	MPI_Barrier(MPI_COMM_WORLD);
+	if (rank == 0) { // Засечение времени начала выполнения основного алгоритма
+		start_time = MPI_Wtime();
+	}
+	// Рассылка матрицы от процесса с рангом 0 другим процессам
+	MPI_Bcast(*a, n * n, MPI_INT, 0, MPI_COMM_WORLD);
+	maxa = mina = a[0][0];
+	minp = maxp = 0;
+	for (i = 0; i < n; i++)		//Алгорит поиска наименьшего и наибольшего числа и их индексов
+		for (j = 1; j < n; j++)
+		{
+			if (maxa < a[i][j])
+			{
+				maxa = a[i][j];
+				maxp = i;
+			}
+			if (mina > a[i][j])
+			{
+				mina = a[i][j];
+				minp = j;
+			}
+		}
+	for (i = 0; i < n; i++)
+	{
+		answer[i] = a[maxp][i] * a[i][minp];
+	}
+	if (rank == 0) {		//Засекаем время окончания работы программы
+		time_taken = MPI_Wtime();
+	}
+	if(rank == 0)
+	{
+		cout << "\nРезультат операции: ";	//Вывод результата
+		for (i = 0; i < n; i++)
+		{
+			cout << answer[i] << " ";
+		}
+		cout << "\n" << "Время выполнения программы: " << (time_taken - start_time) * 1000 << "мс" << "\n\n";
+	}
+	MPI_Finalize();	//Завершает среду выполнения вызывающего процесса MPI.
+}

@@ -1,0 +1,17 @@
+#include "stdio.h"
+
+int main() {
+	int a, b, c, d, e;
+
+	printf("Input A,B,C,D: ");
+	scanf("%d %d %d %d", &a, &b, &c, &d);
+	__asm {
+		mov eax, a
+		imul b
+		sub eax, c
+		imul d
+		imul d
+		mov e, eax
+	}
+	printf("\n\nResult: %d\n", e);
+}

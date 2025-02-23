@@ -1,0 +1,64 @@
+Библиотеки
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <malloc.h>
+#include <string.h>
+--------------------------------------------------------------------------
+Очистка
+void clean()
+{
+	while (getchar() != '\n');
+}
+
+---------------------------------------------------------------------------
+Функция пароля
+int password()
+{
+	char pswd[15];
+	int i;
+	do
+	{
+		system("cls");  //Очистка экрана
+		printf("Введите пароль администратора: ");  //Ввод и принятие пароля
+		for (i = 0; pswd[i - 1] != 13 && i < 15; i++)
+		{
+			pswd[i] = _getch();
+			if (pswd[i] != 8 && pswd[i] != 13)
+				printf("*");
+			else if (pswd[i] == 8)
+			{
+				if (i > 0)
+					printf("\b \b");
+				if (i >= 1)
+					i -= 2;
+				else if (i == 0)
+					i -= 1;
+			}
+			else if (pswd[i] == 13);
+		}
+		pswd[i - 1] = '\0';
+		if (strcmp(pswd, "24071977F_x") == 0)
+			break;
+		else
+			printf("\n\nВведён неверный пароль. \nНажмите Esc для выхода\nНажмите Enter для повторного ввода");
+	} while (_getch() != 27);
+	if (strcmp(pswd, "24071977F_x") == 0)
+		return 1;
+}
+
+---------------------------------------------------------------------------------
+Консоль на русском языке
+SetConsoleCP(1251); //Возможность вводить русские буквы
+setlocale(LC_ALL, "rus");
+или
+SetConsoleCP(1251);
+SetConsoleOutputCP(1251);
+
+----------------------------------------------------------------------------------
+Looping through the characters of a std::string, using a range-based for loop (it's from C++11, already supported in recent releases of GCC, clang, and the VC11 beta):
+
+std::string str = ???;
+for(char& c : str) {
+    do_things_with(c);
+}

@@ -1,0 +1,85 @@
+#include <iostream>
+#include <Windows.h>
+
+using namespace std;
+
+struct SL1 {//структура данных
+	int Key; //информационное поле
+	SL1* Index; //адресное поле
+};
+SL1* Head1; //указатель на первый элемент списка L1
+SL1* Head2;	//Указатель на первый элемент L2
+SL1* head; //Указатель на первый элемент L
+
+void Make_Single_List(int n, SL1** Head)
+{
+	if (n > 0) {
+		*Head = new SL1(); //выделяем память под новый элемент
+		cout << "Введите значение ";
+		cin >> (*Head)->Key; //вводим значение информационного поля
+		(*Head)->Index = NULL;//обнуление адресного поля
+		Make_Single_List(n - 1, &((*Head)->Index));		//Используем рекурсивный ввод значений
+	}
+}
+
+void Print_Single_List(SL1* Head) {
+	if (Head != NULL) {
+		cout << Head->Key << " ";
+		Print_Single_List(Head->Index);		//переход к следующему элементу
+	}
+	else cout << "\n";
+}
+
+
+void push_sl(SL1** Head, int NewItem)
+{
+	SL1* q = new SL1();	//Создаём вспомагательный список и объявляем указатель на его первый элемент
+	SL1* temp = new SL1();
+	temp = (*Head);
+	q->Key = NewItem;	//Вносим значения в этот список
+	if (*Head == NULL) {//список пуст
+		*Head = new SL1();
+		*Head = q;//создаем первый элемент списка
+	}
+	else
+	{//список не пуст 
+		while (temp->Index != NULL)	//Переводим указатель на свободный индекс
+			temp = temp->Index;	
+		temp->Index = q;	//Вносим новое значение
+	}
+}
+
+void find(SL1* head1, SL1* head2)
+{
+	int flag = 0;	//Флаг, показывающий, что элемент найден
+	SL1* q1, * q2;	//Вспомагательные списки для проверки ключей
+	q1 = head1;		//Приравниваем указатели к указателям на первый элемент
+	q2 = head2;
+	for (; q1 != NULL;)
+	{
+		for (flag = 0; q2 != NULL && flag == 0;)	//Простейший перебор элементов списка
+		{
+			if (q2->Key == q1->Key)	//Если ключи равны
+				flag = 1;
+			q2 = q2->Index;		//Переход к следующему элементу
+		}
+		if (flag == 0)		//Если похожих элементов не найдено
+			push_sl(&head, q1->Key);	//Внести элемент L1 в список L
+		q1 = q1->Index;	//Переход к следующему элементу списка
+		q2 = head2;	//Сброс на первый элемент списка
+	}
+}
+
+int main() {
+	int n1, n2;
+	setlocale(LC_ALL, "");
+	SetConsoleCP(1251);
+	cout << "Введите кол-во элементов первого списка: ";
+	cin >> n1;
+	Make_Single_List(n1, &Head1);
+	cout << "\nВведите кол-во элементов второго списка: ";
+	cin >> n2;
+	Make_Single_List(n2, &Head2);
+	find(Head1, Head2);
+	Print_Single_List(head);
+}

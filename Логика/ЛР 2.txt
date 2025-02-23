@@ -1,0 +1,38 @@
+#include <iostream>
+
+using namespace std;
+
+int Fuction1(int x, int y, int z)
+{
+	int t = 0;
+	while ((t <= (x * x + z)) && !(pow(2, (t+1)) > x*x + z)) 
+		t++;
+	return t;
+}
+
+int Fuction2(int x, int y, int z, int f1)
+{
+	int s = 0;
+	while (s <= f1 && !((s+1)*y > f1))
+		s++;
+	return s;
+}
+
+int Fuction(int x, int y, int z)
+{
+	int w = 0;
+	int check1 = Fuction1(x, y, z);
+	int check2 = Fuction2(x, y, z, check1);
+	while (w<y && check1>(check2*y)+w)
+		w++;
+	return w;
+}
+
+int main()
+{
+	int x, y, z;
+	cout << "x = "; cin >> x;
+	cout << "y = "; cin >> y;
+	cout << "z = "; cin >> z;
+	cout << "f(" << x << ", " << y << ", " << z << ") = " << Fuction(x, y, z) << endl;
+}

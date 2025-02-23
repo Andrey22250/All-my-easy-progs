@@ -1,0 +1,82 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int *h, i, j, n, m, count, swap;
+	char *mass;
+	printf("Двумерный динамический массив\n");
+	do
+	{
+		printf("\nВведите размерность матрицы n x m: ");
+		scanf("%d%d", &n, &m);
+		while (getchar() != '\n');  //Очистка потока
+		mass = (char*)calloc(n * m, sizeof(int));  //Выделение памяти массиву
+/*Если нет элементов*/
+		if (mass == NULL)
+		{
+			printf("\nНет памяти, конец работы");
+			return 1;
+		}
+/*Ввод элементов массива*/
+		printf("\nВведите символьную матрицу (%d x %d)\n", n, m);
+		for (i = 0; i < n; i++)
+		{
+			printf("\n%d строка\n", i+1);
+			for (j = 0; j < n; j++)
+			{
+				printf("%d элемент: ", j+1);
+				scanf("%c", mass + i * m + j);
+				while (getchar() != '\n');
+			}
+		}
+/*Вывод массива*/
+		printf("Элементы матрицы\n");
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < m; j++)
+				printf("%2c (%p) ", *(mass + i * m + j), (mass + i * m + j));
+			printf("\n");
+		}
+/*Подсчёт количества цифр в строках*/
+		h = (int*)calloc(n, sizeof(int));
+		count = 0;
+		for (i = 0; i < n; i++)
+		{
+			count = 0;
+			for (j = 0; j < m; j++)
+				if (int(*(mass + i * m + j)) >= 48 && int(*(mass + i * m + j)) <= 57)
+					count += 1;
+			*(h + i) = count;
+		}
+/*Вывод количества цифр в строке*/
+		printf("Количество символов '0', '1', ... , '9' в строке\n");
+		for (i = 0; i < n; i++)
+		{
+			printf("%d строка: %2d (%p)\n", i+1, *(h + i), (h + i));
+		}
+/*Сортировка одномерного массива по убыванию*/
+		for(count = 0; count < n;count++)
+			for (i = 0; i < n - 1; i++)
+				if (*(h + i) < *(h + i + 1))
+				{
+					swap = *(h + i);
+					*(h + i) = *(h + i + 1);
+					*(h + i + 1) = swap;
+				}
+/*Вывод упорядоченного массива*/
+		printf("Упорядоченное количество символов '0', '1', ... , '9' в строке\n");
+		for (i = 0; i < n; i++)
+		{
+			printf("%d строка: %2d (%p)\n", i + 1, *(h + i), (h + i));
+		}
+/*Очистка памяти*/
+		free(mass);
+		free(h);
+		mass = NULL;
+		h = NULL;
+		printf("\nНажмите Enter для перезапуска программы\nНажмите Esc для выхода из программы\n");
+	} while (_getch()!=27);
+}

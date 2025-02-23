@@ -1,0 +1,76 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int* h, * find, n, i, count, f;
+	char* mass, swap, *adr;
+	printf("Одномерный динамический массив\n");
+	do
+	{
+		/*Задание количества элементов массива*/
+		printf("\nВведите количество элементов массива: ");
+		scanf("%d", &n);
+		/*Выделение памяти на каждый элемент массива*/
+		mass = (char*)calloc(n, sizeof(int));
+		/*Если в массиве нет элементов, то выходим из программы*/
+		if (mass == NULL || n < 1)
+		{
+			printf("Нет памяти, конец работы\n");
+			return 1;
+		}
+		while (getchar() != '\n');  //Очистка потока
+		/*Ввод массива*/
+		printf("Введите массив из %d символов\n", n);
+		for (i = 0; i < n; i++)
+		{
+			printf("%d символ: ", i + 1);
+			scanf("%c", mass + i);
+			while (getchar() != '\n');
+		}
+		/*Вывод массива и его адресов*/
+		printf("\nЭлементы массива: ");
+		for (i = 0; i < n; i++)
+			printf("%2c (%p) ", *(mass + i), (mass+i));
+		/*Выделение памяти динамической переменной и её ввод*/
+		printf("\n\nВведите h: ");
+		h = (int*)malloc(sizeof(int));
+		scanf("%d", h);
+		/*Перестановка в случае, если значение h < 1*/
+		if (*h < 1)
+		{
+			for (i = 0, count = n - 1; i < n / 2; i++, count--)
+			{
+				swap = *(mass + i);
+				*(mass + i) = *(mass + count);
+				*(mass + count) = swap;
+			}
+		}
+		/*Вывод массива и его адресов*/
+		printf("\nЭлементы массива: ");
+		for (i = 0; i < n; i++)
+			printf("%2c (%p) ", *(mass + i), (mass + i));
+		/*Поиск символа '+'*/
+		find = (int*)malloc(sizeof(int));
+		adr = (char*)malloc(sizeof(int));
+		*find = -1;
+		f = 1;
+		for (i = 0; i < n && f == 1; i++)
+			if (*(mass + i) == '+')
+			{
+				adr = (char*)malloc(sizeof(char));
+				adr = (mass + i);
+				*find = i + 1;
+				f = 0;  //Флаг для прекращения поиска
+			}
+		printf("\nНомер символа + в массиве: %d (%p)", *find, adr);  //Если знака нет, то будет другой адрес
+		free(mass);
+		free(find);
+		free(h);
+		find = h = NULL;
+		mass = NULL;
+		printf("\n\nНажмите Enter для перезапуска программы\nНажмите Esc для выхода из программы\n");
+	} while (_getch() != 27);
+}

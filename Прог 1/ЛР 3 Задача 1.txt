@@ -1,0 +1,31 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <math.h>
+#define C 1.234567
+#define PI 3.141593
+#define e 2.718281
+
+int main()
+{
+	setlocale(LC_ALL, "rus"); //Установливаем русский язык
+	float x, y;
+	int f;
+	printf("Вычисление y = f(x) по заданному аргументу x \n");
+	printf("\nВведите значение x: ");
+	scanf("%f", &x);
+	if (x > -1.0 && x < 4)  //Установка значения флажка в зависимости от «есть-нет решение
+	{
+		f = 1;
+		if (-1.0 < x && x <= 3) //Расчёт у по формулам
+			y = (C - exp(pow(x, 2) - PI)) / (C * (pow(x, 1.0 / 3) - x));
+		else
+			y = sin(pow(x, 2) - C);
+	}
+	else
+		f = 0;
+
+	if (f)  //Вывод результата
+		printf("\nДля x=%f y=%f\n", x, y);
+	else
+		printf("\nЗаданный х не принадлежит области определения функции\n");
+}

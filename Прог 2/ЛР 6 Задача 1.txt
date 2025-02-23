@@ -1,0 +1,131 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+FILE* file1;
+FILE* file2;
+
+int clean()
+{
+    while (getchar() != '\n');
+    return 1;
+}
+
+int fin(int* n)     //Функция ввода массива чисел в внесение их в файл
+{
+    int i, a[10000];
+    do
+    {
+        printf("Введите количество чисел(Кратно 20): ");
+        scanf("%d", n);
+        clean();
+    } while (*n < 1 || *n % 20 != 0 || *n>10000);
+    file1 = fopen("file1.txt", "w");
+    if (file1 == NULL)
+        return -1;
+    for (i = 0; i < *n; i++)
+    {
+        do  //Защита от дурака
+        {
+            printf("Введите %d число: ", i + 1);
+            scanf("%d", &a[i]);
+            clean();
+        } while (((i / 5) % 2 == 0 && a[i] <= 0) || ((i / 5) % 2 == 1 && a[i] >= 0));
+    }
+    for (i = 0; i < *n; i++)    //Запись в файл
+    {
+        fprintf(file1, "%d ", a[i]);
+    }
+    fclose(file1);  //Закрытие потока
+    return 1;
+}
+
+int fwork(int n)   //Обработка файла и внесение в новый файл
+{
+    int i, a[10000], j, k, pol[5000], otr[5000], b[10000];
+    file1 = fopen("file1.txt", "r");    //Чтение файла
+    if (file1 == NULL)
+        return -1;
+    for (i = 0; i < n; i++)
+    {
+        fscanf(file1, "%d", &a[i]);
+    }
+    for (i = j = k = 0; i < n; i++)
+    {
+        if (a[i] > 0)
+        {
+            pol[j] = a[i];
+            j++;
+        }
+        else
+        {
+            otr[k] = a[i];
+            k++;
+        }
+    }
+    for (i = j = k = 0; i < n; i++)
+    {
+        if ((i / 2) % 2 == 0)
+        {
+            b[i] = pol[j];
+            j++;
+        }
+        else
+        {
+            b[i] = otr[k];
+            k++;
+        }
+    }
+    file2 = fopen("file2.txt", "w");
+    if (file2 == NULL)
+        return -2;
+    for (i = 0; i < n; i++)
+        fprintf(file2, "%d ", b[i]);    //Запись в файл
+    fclose(file1);
+    fclose(file2);
+    return 1;
+}
+
+int fout(int n)
+{
+    int b[10000], i;
+    file2 = fopen("file2.txt", "r"); //Чтение файла
+    if (file2 == NULL)
+        return -1;
+    for (i = 0; i < n; i++)
+    {
+        fscanf(file2, "%d", &b[i]);
+    }
+    printf("\nУпорядоченные числа: ");
+    for (i = 0; i < n; i++)
+    {
+        printf("%d ", b[i]);
+    }
+    fclose(file2);
+    return 1;
+}
+
+int main()
+{
+    setlocale(LC_ALL, "");
+    do  //Зацикливание программы
+    {
+        int n;
+        switch (fin(&n))
+        {
+        case -1: {printf("\nОшибка открытия файла"); exit(-1); } break;
+        case 1: printf("\nФайл file1.txt успешно сохранён\n"); break;
+        }
+        switch (fwork(n))
+        {
+        case -1: {printf("\nОшибка открытия file1.txt"); exit(-1); } break;
+        case -2: {printf("\nОшибка открытия file2.txt"); exit(-1); } break;
+        case 1: printf("\nФайл file2.txt успешно сохранён.\n"); break;
+        }
+        switch (fout(n))
+        {
+        case -1: {printf("\nОшибка открытия файла"); exit(-1); } break;
+        case 1: printf("\nФайл file2.txt успешно сохранён\n"); break;
+        }
+        printf("\n\nНажмите Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+    } while (_getch() != 27);
+}

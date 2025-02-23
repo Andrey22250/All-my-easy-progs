@@ -1,0 +1,135 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#define PI 3.1415926535
+/*Прототипы функций*/
+double func1(double x, double e);
+double func2(double x, double e);
+double vivod(double x, double e, double y);
+void clean()  //Очистка потока
+{
+	while (getchar() != '\n');
+}
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	double x, e, y;
+	int n;
+	printf("Вычисление суммы ряда с заданной точностью. Оператор Return.\n\n");
+	do
+	{
+		do    //Выбор формулы
+		{
+			printf("Выберите формулу для счёта:\n1 - arcsin x\n2 - arcсtg x\nВаш выбор: ");
+			scanf("%d", &n);
+			clean();
+		} while (n < 1 || n>2);
+		printf("\n");
+		if (n == 1)  //Ввод х
+		{
+			do
+			{
+				printf("Введите x в диапазоне от -1 до 1: ");
+				scanf("%lf", &x);
+				clean();
+			} while (x < (-1) || x > 1);
+		}
+		else
+		{
+			do
+			{
+				printf("Введите x: ");
+				scanf("%lf", &x);
+				clean();
+			} while (x != x);
+		}
+		printf("\n");
+		do  //Ввод точности
+		{
+			printf("Введите точность в диапазоне от 0 до 1: ");
+			scanf("%lf", &e);
+			clean();
+		} while (e <= 0 || e > 1);
+		if (n == 1)	y = func1(x, e);  //Выбор формулы
+		else if (n == 2) y = func2(x, e);
+		printf("\n");
+		vivod(x, e, y);
+	} while (_getch() != 27);
+
+}
+/*Функция для подсчёта arcsin*/
+double func1(double x, double e)
+{
+	double sum, slag, num, denom;
+	int i;
+	sum = x;
+	num = x * x * x;
+	denom = 2;
+	slag = num / (denom * 3);
+	for (i = 3; abs(slag) >= e; i += 2)
+	{
+		sum += slag;
+		num = num * i * x * x;
+		denom = denom * (i + 1);
+		slag = num / (denom * (i + 2));
+	}
+	return sum;
+}
+/*Функция для подсчёта arcctg*/
+double func2(double x, double e)
+{
+	int i, mark;
+	double sum, denom, flag;
+	if (x >= 1)
+	{
+		denom = x * x * x;
+		sum = 1 / x;
+		mark = -1;
+		flag = 1 / x;
+		for (i = 2; abs(flag) >= e; i++)
+		{
+			sum += mark / (denom * (i * 2 - 1));
+			flag = 1.0 / (denom * (i * 2 - 1));
+			denom = denom * x * x;
+			mark *= -1;
+		}
+		return sum;
+	}
+	else if (abs(x) < 1)
+	{
+		sum = x;
+		denom = x * x * x;
+		mark = -1;
+		flag = x;
+		for (i = 2; abs(flag) >= e; i++)
+		{
+			sum += mark * denom / (2 * i - 1);
+			flag = denom / (2 * i - 1);
+			mark *= -1; denom = denom * x * x;
+		}
+		return PI / 2 - sum;
+	}
+	else
+	{
+		denom = x * x * x;
+		sum = 1 / x;
+		mark = -1;
+		flag = 1 / x;
+		for (i = 2; abs(flag) >= e; i++)
+		{
+			sum += mark / (denom * (i * 2 - 1));
+			flag = 1.0 / (denom * (i * 2 - 1));
+			denom = denom * x * x;
+			mark *= -1;
+		}
+		return PI + sum;
+	}
+}
+/*Функция вывода результатов*/
+double vivod(double x, double e, double y)
+{
+	printf("Для х=%g и точности e=%g по выбранной формуле:\ny=%.10g", x, e, y);
+	printf("\n\nДля повторного ввода нажмите Enter\nДля выхода из программы нажмите Esc\n\n");
+	return 1;
+}

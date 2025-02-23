@@ -1,0 +1,52 @@
+#include <iostream>
+#include <omp.h>
+#include <chrono>
+#include <Windows.h>
+#define N 4
+
+using namespace std;
+
+int main() {
+	short int a[N][N], answer[N], i, j, mina, maxa, maxp, minp;
+	setlocale(LC_ALL, "");
+	for (i = 0; i < N; i++)		// Стандартый ввод матрицы
+	{
+		printf("Введите элементы %d строки: ", i + 1);
+		for (j = 0; j < N; j++)
+		{
+			cin >> a[i][j];
+		}
+	}
+	printf("\nМаксимальное число потоков компьютера: %d ", omp_get_max_threads());
+	auto time1 = chrono::high_resolution_clock::now();
+	maxa = mina = a[0][0];
+	minp = maxp = 0;
+#pragma omp parallel for
+		for (i = 0; i < N; i++)
+			for (j = 1; j < N; j++)
+			{
+				if (maxa < a[i][j])
+				{
+					maxa = a[i][j];
+					maxp = i;
+				}
+				if (mina > a[i][j])
+				{
+					mina = a[i][j];
+					minp = j;
+				}
+			}
+#pragma omp parallel for	
+		for (i = 0; i < N; i++)
+		{
+			answer[i] = a[maxp][i] * a[i][minp];
+		}
+	auto time2 = chrono::high_resolution_clock::now();
+	double time_taken = chrono::duration_cast<chrono::nanoseconds>(time2 - time1).count();
+	cout << "\nРезультат операции: ";	//Вывод результата
+	for (i = 0; i < N; i++)
+	{
+		cout << answer[i] << " ";
+	}
+	cout << "\n" << "Время выполнения программы: " << time_taken << "нс" << "\n\n";
+}

@@ -1,0 +1,24 @@
+#include <iostream>
+
+using namespace std;
+
+int Fuction(int x, int y)
+{
+	if (y == 0)
+		if (x * 2 > 2) return 2 * x - 2;
+		else return 0;
+	int z = Fuction(x, y - 1);
+	if (y > z)
+		return x * x + (y - 1 - z);
+	else
+		return x * x;
+}
+
+int main()
+{
+	int x, y, result;
+	cout << "x = "; cin >> x;
+	cout << "y = "; cin >> y;
+	result = Fuction(x, y);
+	cout << "f(" << x << ", " << y << ") = " << result << endl;
+}

@@ -1,0 +1,55 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <ctime> 
+#define N 10000
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int i, j, j1, k, k1, n, f;
+	double a[N], Fib[N], b[N];
+	printf("Числа Фибоначчи");
+	do
+	{
+		do
+		{
+			printf("\nВведите количество элементов (не более 10000): "); //Ввод кол-во элементов
+			scanf("%d", &n);
+		} while (n < 0 || n>10000);
+		printf("Введите элементы через пробел: ");
+		for (i = 0; i < n; i++)
+			scanf("%lf", &a[i]);
+		float start_time = clock(); // начальное время
+		Fib[0] = Fib[1] = 1;
+//Заполение массива числами Фибоначчи
+		for (j = 2; Fib[j - 1] < 2000000000; j++)
+		{
+			Fib[j] = Fib[j - 1] + Fib[j - 2];
+		}
+		j1 = j;
+		k = 0;
+//Проверка числа на принадлежность числам Фибоначчи
+		for (i = 0; i < n; i++)
+		{
+			f = 0;
+			for (j = 0; j < j1 && (f == 0); j++)
+			{
+				if (a[i] == Fib[j])
+				{
+					b[k] = a[i];
+					k++;
+					f = 1;
+				}
+			}
+		}
+		k1 = k;
+		printf("Числа Фибоначчи в данной последовательности: ");
+		for (k = 0; k < k1; k++)
+			printf("%lg ", b[k]);
+		float end_time = clock(); // конечное время
+		float search_time = end_time - start_time; // искомое время
+		printf("\nВремя выполнения программы: %lg", search_time / 1000.0);  //Вывод результата
+		printf("\n\nНажмите Enter для повтора программы\nНажмите Esc для выхода из программы\n");
+	} while (_getch() != 27);
+}

@@ -1,0 +1,24 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");	//Установка русского языка
+	float a, b, c, x;
+	printf("Можно ли просунуть кирпич в отверстие?\n");
+	/*Ввод данных*/
+	printf("\nВведите стороны кирпича a,b,c: ");
+	scanf("%f%f%f", &a, &b, &c);
+	printf("\nВведите сторону отверстия: ");
+	scanf("%f", &x);
+	/*Верны ли значения*/
+	if (a >= 0 && b >= 0 && c >= 0 && x >= 0)
+	{
+		if (a <= x && b <= x || a <= x && c <= x || b <= x && c <= x) // Высичления и вывод
+			printf("\nМожно\n");
+		else
+			printf("\nНельзя\n");
+	}
+	else
+		printf("\nВведены неверные данные\n");
+}

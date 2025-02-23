@@ -1,0 +1,24 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <math.h>
+#define C 1.234567
+#define PI 3.141593
+#define e 2.718281
+
+int main()
+{
+	setlocale(LC_ALL, "rus");	/*Использование русского языка*/
+	float x, y, y1;	/*Ввод переменных*/
+	printf("Вычисление y = f(x) по заданному аргументу x по двум формулам \n");
+	/*Вычисления y по первой формуле для -1<x<=3*/
+	printf("\nВведите x в диапазоне -1<x<=3: ");
+	scanf("%f", &x);
+	y = (C - exp(pow(x, 2) - PI)) / (C * (pow(x, 1.0 / 3) - x)); /*Формула*/
+	printf("Для х=%f y=%f\n", x, y);
+	/*Вычисления y по второй формуле для 3<x<4*/
+	printf("\nВведите х в диапазоне 3<x<4: ");
+	scanf("%f", &x);
+	y1 = pow(x,2)-C; /*Рассчёты*/
+	y = sin(y1);
+	printf("Для x=%f y=%f\n", x, y);
+}

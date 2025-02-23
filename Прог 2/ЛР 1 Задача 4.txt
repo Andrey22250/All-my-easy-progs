@@ -1,0 +1,76 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+
+#define max_words 750
+#define max_len 1000
+#define max_word_len 1000
+#define CHARS " -\"\n"
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	char* word, words[max_words][max_word_len], text[max_len], text1[max_len], flag;
+	int i, j, len, n = 0, s, k;
+	int word_len[max_words];
+	printf("Смена s и k-ой буквы. Строковые функции.\nВнимание! Максимум символов в тексте - 999!\n\n");
+	do
+	{
+/*Ввод текста*/
+		printf("Введите текст посимвольно (конец строки - Enter): ");
+		fgets(text, max_len, stdin);
+/*Ввод s и k*/
+		do
+		{
+			printf("Введите s и k: ");
+			scanf("%d%d", &s, &k);
+			while (getchar() != '\n');
+		} while (s >= k || k <= 0 || k > 9 || s <= 0);
+		s--; k--;
+/*Вывод введённого теста*/
+		printf("\nВы ввели текст: ");
+		printf("%s", text);
+/*Выделение слов в тексте*/
+		strcpy(text1, text);
+		word = strtok(text1, CHARS);
+		n = 0;
+		while (word != NULL)
+		{
+			strcpy(words[n], word);
+			n++;
+			word = strtok(NULL, CHARS);
+		}
+/*Защита от ввода пустой строки или строки разделителей*/
+		if (text[0] == ' ' || text[0] == '\n' || text[0] == '.' || text[0] == '!' || text[0] == '?' || text[0] == ',' || text[0] == '-')
+			words[0][0] = '\0';
+/*Считаем кол-во знаков в каждом слове*/
+		for (i = 0; i < n; i++)
+		{
+			j = strlen(words[i]);
+			word_len[i] = j;
+			if (words[i][j - 1] == ',' || words[i][j - 1] == '-' || words[i][j - 1] == '.' || words[i][j - 1] == '!' || words[i][j - 1] == '?')
+				word_len[i] -= 1;
+		}
+/*Преобразуем слово по правилу*/
+		for (i = 0; i < n; i++)
+			if (word_len[i] - 1 >= k)
+			{
+				flag = words[i][s];
+				for (j = s; j < k; j++)
+				{
+					words[i][j] = words[i][j + 1];
+				}
+				words[i][k] = flag;
+			}
+/*Вывод текста*/
+		printf("\nТекст с правилом: ");
+		for (i = 0; i < n; i++)
+		{
+			printf("%s ", words[i]);
+		}
+		if (words[0][0] == '\0')
+			printf("Ошибка. Введена неверная строка.");
+		printf("\n\nНажмите Enter для повторного запуска программы\nНажмите Esc для выхода из программы\n\n");
+	} while (_getch() != 27);
+}

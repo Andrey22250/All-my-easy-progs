@@ -1,0 +1,90 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+
+int main()
+{
+	printf("Определение заданной цифры");
+	while(true)
+	{
+		setlocale(LC_ALL, "rus");
+		int fig, count, dig, len = 0, a, b, c = 0;
+		printf("\nВведите число: ");
+		scanf("%d", &dig);
+		if (dig < 0)
+			printf("\nВведено неверное число\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n\n");
+		else
+		{
+			printf("\nВведите цифру для поиска: ");
+			scanf("%d", &fig);
+			b = dig;
+			a = dig % 10;
+			while (b > 0)
+			{
+				b /= 10;
+				len++;
+			}
+			for (count = 0; count < len; count++)
+			{
+				if (a == fig)
+				{
+					printf("Номер заданной цифры: %d\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n\n", count+1);
+					c = 1;
+					break;
+				}
+				dig /= 10;
+				a = dig % 10;
+			}
+			if (c == 0)
+				printf("Номер заданной цифры: %d\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n\n", c);
+			}
+		if (_getch() == 27)
+			break;
+	}
+}
+
+
+//#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	printf("Определение заданной цифры");
+	do
+	{
+		int fig, count, dig, len = 0, a, b, c = 0, d=0;
+		printf("\nВведите число: ");
+		scanf("%d", &dig);
+		if (dig < 1)
+			printf("\nВведено неверное число\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+		else
+		{
+			printf("\nВведите цифру для поиска: ");
+			scanf("%d", &fig);
+			b = dig;
+			a = dig % 10;
+			while (b > 0)
+			{
+				b /= 10;
+				len++;
+			}
+			for (count = 0; count < len; count++)
+			{
+				if (a == fig)
+				{
+					d = count + 1;
+					c = 1;
+					break;
+				}
+				dig /= 10;
+				a = dig % 10;
+			}
+			if (c == 0)
+				printf("Номер заданной цифры: %d\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n", c);
+			else
+				printf("Номер заданной цифры: %d\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n", d);
+		}
+	} while (_getch() != 27);
+}

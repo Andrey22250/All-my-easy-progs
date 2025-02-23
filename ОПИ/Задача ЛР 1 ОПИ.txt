@@ -1,0 +1,21 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+
+int main()
+{
+	/*Использование русского языка*/
+	setlocale(LC_ALL, "rus");
+	/*Ввод переменных*/
+	int nmbr, count;
+	count = 0;
+	printf("Введите число : ");
+	scanf("%d", &nmbr);
+	/*Цикл для счёта единичных разрядов*/
+	while (nmbr>0)
+	{
+		if (nmbr & 0x1 == 1)
+			count++;
+			nmbr = nmbr >> 1;
+	}
+	printf("\nКоличество единичных разрядов : %d\n", count);
+}

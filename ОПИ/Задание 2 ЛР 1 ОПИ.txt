@@ -1,0 +1,55 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int input1, input2, shag_sdviga;
+	// Пункт 1 и 2
+	printf("Введите обрабатываемое целое десятичное число:");
+	scanf("%u", &input1);
+	printf("\nРезультат быстрого умножения на два= %u \n", input1 << 1); //умножение и деление на 2
+	printf("Результат быстрого деления на два= %u \n", input1 >> 1);
+	// Пункт 4
+	printf("\nВведите шаг циклического сдвига(целое десятичное число):");
+	scanf("%u", &shag_sdviga);
+	shag_sdviga = shag_sdviga % (sizeof(input1) * 8);
+	printf("\nРезультат циклического сдвига вправо= %u \n", (input1 >> shag_sdviga) | (input1 << (sizeof(input1) * 8 - shag_sdviga))); //циклический сдвиг на заданный шаг
+	printf("Результат циклического сдвига влево= %u \n", (input1 << shag_sdviga) | (input1 >> (sizeof(input1) * 8 - shag_sdviga)));
+	// Пункт 3
+	printf("\nВведите целое десятичное число для обмена:");
+	scanf("%u", &input2);
+	printf("\nЗначение первой переменной= %u \nЗначение второй переменной= %u \n", input1, input2);
+	input1 = input1 xor input2;//обмен значений
+	input2 = input2 xor input1;
+	input1 = input1 xor input2;
+	printf("Значение первой переменной после обмена= %u \nЗначение второй переменной после обмена= %u \n", input1, input2);
+}
+
+
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int input1, input2, shag_sdviga;
+	printf("Введите обрабатываемое целое десятичное целое десятичное число:");
+	scanf("%u", &input1);
+	printf("Результат быстрого умножения на два= %u \n", input1 << 1); //умножение и деление на 2
+	printf("Результат быстрого деления на два= %u \n", input1 >> 1);
+	printf("Введите шаг сдвига(целое десятичное число):");
+	scanf("%u", &shag_sdviga);
+	printf("Результат циклического сдвига вправо= %u \n", (input1 >> shag_sdviga) | (input1 << (32 - shag_sdviga))); //циклический сдвиг на заданный шаг
+	printf("Результат циклического сдвига влево= %u \n", (input1 << shag_sdviga) | (input1 >> (32 - shag_sdviga)));
+	printf("Введите целое десятичное число для обмена:");
+	scanf("%u", &input2);
+	printf("Значение первой переменной= %u \n Значение второй переменной= %u \n", input1, input2);
+	input1 = input1 xor input2;//обмен значений
+	input2 = input2 xor input1;
+	input1 = input1 xor input2;
+	printf("Значение первой переменной после обмена= %u \n Значение второй переменной после обмена= %u \n", input1, input2);
+}

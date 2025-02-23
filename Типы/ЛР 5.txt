@@ -1,0 +1,83 @@
+#include <Windows.h>
+#include <iostream>
+#include <fstream>
+#define N 128
+
+using namespace std;
+
+int main()
+{
+	int a[N][N], b[N][N], ups[N][N], ups1[N][N], size, len, count = 1;
+	int inp = 0, i, j;
+	setlocale(LC_ALL, "");
+	SetConsoleCP(1251);
+	ifstream strm1("input_file.dat");
+	if (!strm1.is_open())
+	{
+		cout << "Выбран несуществующий файл";
+		strm1.close();
+		ofstream strm("input_file.dat");
+		strm.close();
+		ifstream strm1("input_file.dat");
+		cout << "\nФайл был создан!";
+	}
+	ofstream strm2("output_file.dat");
+	strm2 << "Исходная матрица:\n";
+	if (strm1.peek() != EOF)
+	{
+		strm1 >> size;
+		for (i = 0; i < size; i++)
+		{
+			for (j = 0; j < size; j++)
+			{
+				strm1 >> a[i][j];
+				ups1[i][j] = b[i][j] = a[i][j];
+				strm2 << a[i][j] << " ";
+				inp += a[i][j];
+				ups1[i][j] = a[i][j];
+			}
+			strm2 << endl;
+		}
+		memset(ups, 0, sizeof(int) * N * N);
+		len = size * 2;
+		if (inp == 0)
+			cout << "\nВведена нулевая матрица. Путей нет";
+		cout << "Матрица путей" << ":\n  ";
+		strm2 << "Матрица путей" << ":\n";
+		while (len-- > 0)
+		{
+			inp = 0;
+			for (int m = 0; m < size; m++)
+				for (int n = 0; n < size; n++)
+					for (i = 0; i < size; i++)
+					{
+						ups[m][n] += b[m][i] * a[i][n];
+					}
+			for (i = 0; i<size; i++)
+				for (j = 0; j < size; j++)
+				{
+					b[i][j] = ups[i][j];
+					if (ups1[i][j] == 0 && ups[i][j] == 1)
+						ups1[i][j] = 1;
+				}
+			memset(ups, 0, sizeof(int) * N * N);
+		}
+		for (i = 1; i <= size; i++)
+			cout << " x" << i;
+		cout << "\n";
+		for (i = 0; i < size; i++)
+		{
+			cout << "x" << i + 1 << " ";
+			for (j = 0; j < size; j++)
+			{
+				cout << ups1[i][j] << "  ";
+				strm2 << ups1[i][j] << " ";
+				if (ups[i][j] == 0 && b[i][j] == 1)
+					ups1[i][j] = 1;
+			}
+			cout << endl;
+			strm2 << endl;
+		}
+	}
+	
+}

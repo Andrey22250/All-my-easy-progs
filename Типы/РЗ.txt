@@ -1,0 +1,184 @@
+#include <Windows.h>
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class BST {
+private:
+	struct node {
+		int data; //поле данных
+		node* left; //указатель на левый потомок
+		node* right; //указатель на правый потомок
+	};
+	node* root;
+	void makeEmpty(node* t) {	//Обнуление древа
+		if (t->left != NULL)
+			makeEmpty(t->left);
+		if (t->right != NULL)
+			makeEmpty(t->right);
+		delete t;
+	}
+	node* findMin(node* t)
+	{
+		if (t == NULL)
+			return NULL;
+		else if (t->left == NULL)
+			return t;
+		else
+			return findMin(t->left);
+	}
+	//добавление узла в бинарное дерево. Дерево заполняется справа налево по возврастанию
+	node* insert(int x, node* t)
+	{
+		if (t == NULL)	//Если древа не существует
+		{
+			t = new node;
+			t->data = x;
+			t->left = t->right = NULL;
+		}
+		else if (x < t->data)	//Если очередной элемент меньше, чем предыдущий
+			t->left = insert(x, t->left);
+		else if (x > t->data)	//Если очередной элемент больше, чем предыдущий
+			t->right = insert(x, t->right);
+		return t;
+	}
+	//удаление правого потомка из бинарного дерева
+	node* remove(int x, node* t) {
+		node* temp, *temp1 = NULL;
+		if (t == NULL)
+			return NULL;
+		else if (t->right && t->right->left != NULL && t->right->right == NULL)
+		{
+			temp = t->right->left;
+			t->right->left = NULL;
+			t->right = temp;
+		}
+		else if (t->right && t->right->left == NULL)
+		{
+			temp = t->right->right;
+			t->right->right = NULL;
+			t->right = temp;
+		}
+		else if (t->left && t->right && t->right->right!= NULL)
+		{
+			if (t->right->left != NULL)
+				temp1 = t->right->left;
+			temp = t->right->right;
+			t->right->right = NULL;
+			t->right = temp;
+			if (temp1 != NULL)
+				t->right->left = temp1;
+		}
+		return t;
+	}
+
+	// поиск в бинарном дереве
+	node* find(node* t, int x) {
+		if (t == NULL)
+			return NULL;
+		else if (x < t->data)
+			return find(t->left, x);
+		else if (x > t->data)
+			return find(t->right, x);
+		else
+			return t;
+	}
+	//печать бинарного дерева в виде дерева повернутого на -90 градусов
+	void print_tree(node* t, int l) {
+		if (t == NULL)
+			return;
+		print_tree(t->right, l + 1);
+		for (int i = 0; i < l; ++i)
+			cout << "\t";	//Сноска будет на табуляцию
+		cout << t->data << "_|" << endl;	//Разделительный элемент
+		print_tree(t->left, l + 1);
+	}
+	void print_treef(node* t, int l) {	//Печать в файле
+		ofstream fl1("output_file.dat", ios::app);		//Открыть файл в режиме добавления
+		if (t == NULL)
+			return;
+		print_treef(t->right, l + 1);
+		for (int i = 0; i < l; ++i)
+			fl1 << "\t";	//Сноска будет на табуляцию
+		fl1 << t->data << "|" << endl;
+		print_treef(t->left, l + 1);
+	}
+public:
+	BST() {	//Конструктор
+		root = NULL;
+	}
+	~BST() {	//Деструктор
+		makeEmpty(root);
+		root = NULL;
+	}
+	//добавление узла в бинарное дерево.
+	void insert(int x) {
+		root = insert(x, root);
+	}
+	// поиск в бинарном дереве
+	void search(int x) {
+		node* temp1 = find(root, x);
+		if (temp1 != NULL && temp1->right != NULL)
+			remove(temp1->data, temp1);
+		else if (temp1 != NULL && temp1->right == nullptr)
+			cout << "Правого потомка не найдено";
+		else
+			cout << "Данного корня не найдено";
+	}
+	//печать бинарного дерева в виде дерева повернутого на -90 градусов
+	void display_tree() {
+		cout << endl << endl;
+		print_tree(root, 0);
+		cout << endl << endl;
+	}
+	void display_treef() {
+		print_treef(root, 0);
+	}
+	// проверка пустоты бинарного дерева
+	bool is_empty() {
+		return !root;
+	}
+};
+
+int main()
+{
+	int inp = 0;
+	setlocale(LC_ALL, "");
+	SetConsoleCP(1251);
+	ifstream strm1("input_file.dat");
+	if (!strm1.is_open())
+	{
+		cout << "Выбран несуществующий файл";
+		strm1.close();
+		ofstream strm("input_file.dat");
+		strm.close();
+		ifstream strm1("input_file.dat");
+		cout << "\nФайл был создан!";
+	}
+	BST* tree = new BST();
+	ofstream strm2("output_file.dat");
+	strm2 << "Исходные данные:\n";
+	if (strm1.peek() != EOF)
+	{
+		for (; !strm1.eof();)
+		{
+			strm1 >> inp;
+			strm2 << inp << "\n";
+			tree->insert(inp);
+		}
+	}
+	strm2 << "\nИтоговое древо\n";
+	strm2.close();
+	if (tree->is_empty())
+		cout << "\n\nВнимание! Древо пустое!";
+	else
+	{
+		tree->display_tree();
+		cout << "Введите вершину для удаления: ";
+		cin >> inp;
+		tree->search(inp);
+		tree->display_tree();
+		tree->display_treef();
+	}
+}

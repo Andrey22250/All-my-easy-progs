@@ -1,0 +1,84 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <Windows.h>
+FILE* file1;
+
+int fin()   //Функция ввода строки в внесение в файл
+{
+    char a[10000];
+    file1 = fopen("file61.txt", "w");
+    if (file1 == NULL)
+        return -1;
+    do
+    {
+        printf("Введите строку: ");
+        fgets(a, 10000, stdin);
+    } while (a[0] == '\n');
+    fputs(a, file1);
+    fclose(file1);
+    return 1;
+}
+
+int fout()  //Функция чтения строки и вывода на экран
+{
+    char a[10000];
+    file1 = fopen("file61.txt", "r");
+    if (file1 == NULL)
+        return -1;
+    printf("\nВведён текст: ");
+    fgets(a, 10000, file1);
+    printf("%s", a);
+    fclose(file1);
+    return 1;
+}
+
+int fwork() //Обработка строки
+{
+    int i, countab = 0, countcd = 0;
+    char a[10000];
+    file1 = fopen("file61.txt", "r");
+    if (file1 == NULL)
+        return -1;
+    fgets(a, 10000, file1);
+    for (i = 1; i < strlen(a); i++)
+        if (a[i - 1] == 'a' && a[i] == 'b')
+            countab++;
+        else if (a[i - 1] == 'c' && a[i] == 'd')
+            countcd++;
+    if (countab != 0 && countcd != 0)
+        printf("\nКоличство сочетаний ab: %d, сочетаний cd: %d\n", countab, countcd);
+    else if (countab != 0 && countcd == 0)
+        printf("\nКоличство сочетаний ab: %d, сочетаний cd - не найдено\n", countab);
+    else if (countab == 0 && countcd != 0)
+        printf("\nCочетаний ab - не найдено, сочетаний cd: %d\n", countcd);
+    else
+        printf("\nСочетаний ab и cd не найдено\n");
+    fclose(file1);
+    return 1;
+}
+
+int main()
+{
+    setlocale(LC_ALL, "");
+    SetConsoleCP(1251);
+    do      //Зацикливание программы
+    {
+        switch (fin())
+        {
+        case -1: {printf("\nОшибка открытия файла"); exit(-1); } break;
+        case 1: printf("\nФайл file1.txt успешно сохранён\n"); break;
+        }
+        switch (fout())
+        {
+        case -1: {printf("\nОшибка открытия файла"); exit(-1); } break;
+        case 1: printf("\nУспешно прочитан\n"); break;
+        }
+        switch (fwork())
+        {
+        case -1: {printf("\nОшибка открытия файла"); exit(-1); } break;
+        case 1: printf("\nУспешно прочитан"); break;
+        }
+        printf("\n\nНажмите Enter для повторного ввода\nНажмите Esc для выхода из программы\n\n");
+    } while (_getch() != 27);
+}

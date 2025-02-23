@@ -1,0 +1,32 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int num, a=1, b=1, c;
+	printf("Числа Фибоначчи\n");
+	do
+	{
+		printf("\nВведите n: ");
+		scanf("%d", &num);
+		num = num - 2;
+		if (num < 0)
+			printf("\nВведено неверное значение n\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+		else
+		{
+			printf("\nРяд Фибоначчи до %d: %d, %d", num+2, a, b);
+			while (num > 0)
+			{
+				c = a + b;
+				printf(", %d", c);
+				a = b;
+				b = c;
+				num--;
+			}
+			printf("\n\nНажмите клавишу Enter для повторного ввода\nНажмите Esc для выхода из программы\n");
+		}
+	} 
+	while (_getch() != 27);
+}

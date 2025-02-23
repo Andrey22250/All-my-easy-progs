@@ -1,0 +1,23 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <math.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus"); //Установливаем русский язык
+	float x, y, c, d;
+	printf("Введите x : "); //Получаем входные данные
+	scanf("%e", &x);
+	printf("\nВведите y : ");
+	scanf("%e", &y);
+	/*Вычисления*/
+	c = (x - y) * (x + y);
+	d = pow(x, 2.0) - pow(y, 2.0);
+	/*Вывод результатов*/
+	printf("\nПри (x - y) * (x + y) : %.10f\n", c);
+	printf("\nПри (x * x) - (y * y) : %.10f\n", d);
+	if (c == d)
+		printf("\n(x - y) * (x + y) равно x * x - y * y\n");
+	else
+		printf("\n(x - y) * (x + y) не равно x * x - y * y\n");
+}

@@ -1,0 +1,20 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <math.h>
+
+int main()
+{
+	/*Использование русского языка*/
+	setlocale(LC_ALL, "rus");
+	/*Ввод переменных*/
+	float Q, I, R, t;
+	printf("Введите значение силы тока в СИ (А) : ");
+	scanf("%f", &I);
+	printf("Введите значение сопротивления в СИ (Ом) : ");
+	scanf("%f", &R); 
+	printf("Введите промежуток времени в СИ (с) : ");
+	scanf("%f", &t);
+	/*Рассчёт и вывод*/
+	Q = pow(I, 2) * R * t;
+	printf("Выделяемоек кол-во теплоты Q = %g Дж",Q);
+}

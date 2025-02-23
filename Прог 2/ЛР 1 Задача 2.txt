@@ -1,0 +1,68 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+
+#define max_words 750
+#define max_len 1000
+#define max_word_len 150
+#define CHARS " ?,.!:-\"\n"
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	/*words - массив слов, text - исходная строка, word_count - счётчик слов, text1 - вспомогательный массив, word - указатель на слово*/
+	char* word, text[max_len], text1[max_len], words[max_words][max_word_len];
+	int i, j, n, flag;
+	int word_count[max_words];
+	printf("Частота слова в тексте. Строковые функции.\nВнимание! Максимальная длина текста - 999 символов\n");
+	do
+	{
+/*Ввод текста*/
+		printf("Введите текст посимвольно (конец строки - Enter): ");
+		fgets(text, max_len, stdin);
+/*Вывод введённого текста*/
+		printf("\nВы ввели текст: ");
+		puts(text);
+		strcpy(text1, text); //Копируем текст
+		word = strtok(text1, CHARS); //Выделяем первое слово
+/*Запись строки в отдельный массив*/
+		n = 0;
+		while (word != NULL)
+		{
+			strcpy(words[n], word);
+			n++;
+			word = strtok(NULL, CHARS);
+		}
+		for (i = 0; i < n; i++)	//Задание исходного массива длины слова
+			word_count[i] = 1;
+/*Сравнение двух слов посимвольно + если слова совпали - добавляем к счётчику 1 и обнуляем строку*/
+		for (i = 0; i < n; i++)
+		{
+			for (j = i + 1; j < n; j++)
+			{
+				flag = strcmp(words[i], words[j]);
+				if (flag == 0)
+				{
+					words[j][0] = NULL;
+					word_count[i] += 1;
+					word_count[j] = NULL;
+				}
+			}
+		}
+		if (n == 0)  //Защита от ввода пустой строки или строки разделителей
+			words[0][0] = NULL;
+/*Вывод слов*/
+		printf("Слова: ");
+		for (i = 0; i < n; i++)
+		{
+			printf("\n");
+			if (words[i][0] != '\n')
+				printf("%s - %d", words[i], word_count[i]);
+			while (words[i + 1][0] == NULL && i < n) i++;
+		}
+		if (words[0][0] == NULL && i == 0) //Вывод защиты от дурака
+			printf("Ошибка. Введена неверная строка.");
+		printf("\n\nНажмите Enter для повторного запуска программы\nНажмите Esc для выхода из программы\n\n");
+	} while (_getch() != 27);	//Выход из программы, если нажат Esc
+}

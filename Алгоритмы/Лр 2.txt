@@ -1,0 +1,220 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+#define matrs 10000
+
+using namespace std;
+
+int Matrin(double a[][matrs], int *sizematrm, int *sizematrn, double *e)  //Функция чтения матрицы и вывода её на экран
+{
+    char temp;
+    string mode; //Для проверки режима
+    ifstream file1("input.txt");
+    if (!file1)
+        return -1;
+    file1 >> *e;
+    file1 >> mode;
+    if (mode == "file") //Считывание с файла
+    {
+        while (file1.get(temp)) // Определение размерности матрицы
+        {
+            if (temp == '\n')
+                (*sizematrm)++;
+            else if (temp == ' ' && *sizematrm == 2)
+                (*sizematrn)++;
+        }
+        if (--(*sizematrm) != *sizematrn - 1)
+        {
+            cout << "Неверная размерность матрицы. Не квадратная";
+            file1.close();
+            return -1;
+        }
+        file1.clear();
+        file1.seekg(0);
+        file1 >> *e; //Считывание символов до матрицы
+        file1 >> mode;
+        cout << "Исходная матрица:\n";
+        for (int i = 0; i < *sizematrm; i++) //Считывание матрицы и столбца свободных членов
+        {
+            for (int j = 0; j < *sizematrn; j++)
+            {
+                file1 >> a[i][j];
+                cout << a[i][j] << ' ';
+                if (*sizematrn - 2 == j)
+                    cout << "| ";
+            }
+            cout << '\n';
+        }
+        file1.close();
+    }
+    else if (mode == "auto") //Автозаполение
+    {
+        do
+        {
+            system("cls"); srand(time(NULL));
+            cout << "Укажите размерность матрицы: ";
+            cin >> *sizematrm;
+            *sizematrn = *sizematrm + 1;
+        } while (*sizematrm < 1 || *sizematrm>10000);
+        for (int i = 0; i < *sizematrm; i++) //Считывание матрицы и столбца свободных членов
+        {
+            double sum = 0;
+            for (int j = 0; j < *sizematrn; j++)
+            {
+                if (i != j)
+                {
+                    a[i][j] = (rand() % 30) - 15; //от -15 до 15
+                    sum += abs(a[i][j]);
+                }
+                a[i][i] = sum + 1; //Достаточное условие сходимости
+            }
+        }
+        if(*sizematrm <= 25) //Вывод матрицы, если не более 25 членов
+        {
+            cout << endl << "Исходная матрица:\n";
+            for (int i = 0; i < *sizematrm; i++) 
+            {
+                for (int j = 0; j < *sizematrn; j++)
+                {
+                    cout << a[i][j] << ' ';
+                    if (*sizematrn - 2 == j)
+                        cout << "| ";
+                }
+                cout << '\n';
+            }
+        }
+        file1.close();
+    }
+    else //Неверная строка режима
+    {
+        file1.close();
+        cerr << "Выбран неверный режим ввода данных";
+        return -1;
+    }
+    
+    return 1;
+}
+
+int CalcYacobi(double a[][matrs], double x[matrs], int *sizematrm, int *sizematrn, double e) //Метод Якоби
+{
+    static double xtemp[matrs] = { 0 };
+    int count = 0;
+    double max = 0;
+    for (int i = 0; i < *sizematrm; i++) //Начальное приближение
+    {
+        if (a[i][i] == 0)
+            return -1;
+        x[i] = a[i][*sizematrn-1] / a[i][i];
+        if (x[i] > max)
+            max = x[i];
+    }
+    while(max>=e) //Алгоритм проверки
+    {
+        count++;
+        max = 0;
+        for (int i = 0; i < *sizematrm; i++)
+        {
+            xtemp[i] = a[i][*sizematrn - 1];    //Сначала - делаем значение новой итерации с помощью старой
+            for (int j = *sizematrn - 2; j >= 0; j--)
+            {
+                if (i != j)
+                {
+                    xtemp[i] -= a[i][j] * x[j];     
+                }
+            }
+            xtemp[i] /= a[i][i];    //Получаем итоговый x
+            if (abs(xtemp[i] - x[i]) > max)     //Смотрим на максимум невязки
+                max = abs(xtemp[i] - x[i]);
+        }
+        for (int i = 0; i < *sizematrm; i++)
+            x[i] = xtemp[i];    //Меняем значения старой итерации на новую
+    }
+    ofstream file1("output.txt");       //Вывод в файл
+    if (!file1)
+        return -2;
+    file1 << "Решение системы методом Якоби:" << endl;
+    file1 << "Число итераций: " << count << endl;
+    file1 << "Норма невязки: " << max << endl;
+    file1 << "Решение системы:" << endl;
+    for (int i = 0; i < *sizematrn - 1; i++)
+    {
+        file1 << "X" << i + 1 << ": " << x[i] << endl;
+    }
+    return 1;
+}
+
+int CalcZeidel(double a[][matrs], double x[matrs], int* sizematrm, int* sizematrn, double e) //Метод Зейделя
+{
+    static double xtemp;
+    int count = 0;
+    double max = 0;
+    x[0] = a[0][*sizematrn - 1] / a[0][0];
+    max = x[0];
+    for (int i = 1; i < *sizematrm; i++)    //Получаем первую итерацию
+    {
+        x[i] = a[i][*sizematrn - 1];
+        for (int j = 0; j < i; j++)
+        {
+            if (i != j)
+            {
+                x[i] -= a[i][j] * x[j];
+            }
+        }
+        x[i] /= a[i][i];
+        if (x[i] > max)
+            max = x[i];
+    }
+    while (max >= e)    //Алгоритм схож с Якоби, только сначала получаем новое значение, потом уже сравниваем со старым
+    {
+        count++;
+        max = 0;
+        for (int i = 0; i < *sizematrm; i++)
+        {
+            xtemp = x[i];       //Для проверки
+            x[i] = a[i][*sizematrn - 1];
+            for (int j = *sizematrn - 2; j >= 0; j--)
+            {
+                if (i != j)
+                {
+                    x[i] -= a[i][j] * x[j];
+                }
+            }
+            x[i] /= a[i][i];
+            if (abs(xtemp - x[i]) > max)
+                max = abs(xtemp - x[i]);
+        }
+    }
+    ofstream file1("output.txt", ios::app);
+    if (!file1)
+        return -2;
+    file1 << endl << "Решение системы методом Зейделя:" << endl;
+    file1 << "Число итераций: " << count << endl;
+    file1 << "Норма невязки: " << max << endl;
+    file1 << "Решение системы:" << endl;
+    for (int i = 0; i < *sizematrn - 1; i++)
+    {
+        file1 << "X" << i + 1 << ": " << x[i] << endl;
+    }
+    return 1;
+}
+
+int main()
+{
+    SetConsoleCP(1251); //Поддержка русского языка
+    SetConsoleOutputCP(1251);
+	static double a[matrs][matrs] = {0}, x[matrs] = {0}, e;
+    int sizematrm = 1, sizematrn = 1;
+    if (Matrin(a, &sizematrm, &sizematrn, &e) == -1)
+        return -1;
+    if (CalcYacobi(a, x, &sizematrm, &sizematrn, e) == -1)  //Если будет вырожденная матрица - увидим тут
+    {
+        ofstream file1("output.txt");
+        file1 << "Матрица вырождена";
+        file1.close();
+        cerr << "\nВырожденная матрица\n";
+        return -1;
+    }
+    if (CalcZeidel(a, x, &sizematrm, &sizematrn, e) == -1)
+        return -1;
+}

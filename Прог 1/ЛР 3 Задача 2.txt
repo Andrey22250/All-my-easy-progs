@@ -1,0 +1,44 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <math.h>
+#define C 1.234567
+#define PI 3.141593
+#define e 2.718281
+
+int main()
+{
+	setlocale(LC_ALL, "rus"); //Установливаем русский язык
+	float x, y;
+	int n, f;
+	printf("Вычисление y = f(x) по заданному аргументу x\n"); //Ввод данных
+	printf("\nВведите n и x : ");
+	scanf("%d%f", &n, &x);
+	switch (n)   //Расчёты
+	{
+	case 1:
+		if ((-1.0) < x && x <= 3)
+		{
+			y = (C - exp(pow(x, 2) - PI)) / (C * (pow(x, 1.0 / 3) - x));
+			f = 2;
+		}
+		else
+			f = 1;
+		break;
+	case 2:
+		if (x > 3 && x < 4)
+		{
+			y = sin(pow(x, 2) - C);
+			f = 2;
+		}
+		else
+			f = 1;
+		break;
+	default: f = 0; break;
+	}
+	switch (f)  // Вывод данных
+	{
+	case 0: printf("\nДля заданного номера варианта n нет решения\n"); break;
+	case 1: printf("\nДля n=%d и x=%f решение не существует: х вне ООФ\n", n, x); break;
+	case 2: printf("\nДля n=%d и x=%f y=%f\n", n, x, y); break;
+	}
+}

@@ -1,0 +1,113 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+#include <Windows.h>
+
+#define strings 250
+#define max_len 500
+
+int main()
+{
+	//Возможность вводить русские символы
+	SetConsoleCP(1251);
+	setlocale(LC_ALL, "rus");
+	char *word, list[strings][max_len], number[strings][max_len], point[strings][max_len], date[strings][max_len], time[strings][max_len], time1[strings][max_len], place[strings][max_len], price[strings][max_len];
+	char ask[max_len], time2[max_len], point1[max_len], date1[max_len];
+	int i, n, j, flag, time_cntr, time_chk, count, ask_count[strings],time_ctrl[strings];
+	printf("Автовокзал. Междугородние рейсы.\n");
+	i = 0;
+	printf("\nСтрока вводится в следующем формате: Номер рейса, Пункт назначения, \
+			\nДата отправления, Время отправления, Общее количество мест, Цена билета.\nКонец ввода - пустая строка!\n\n");
+/*Ввод строк*/
+	do
+	{
+		printf("Введите информацию о рейсе: ");
+		fgets(list[i], max_len, stdin); i++;
+		if (list[0][0] == '\n') //Защита от ввода пустой строки
+		{
+			i--; list[0][0] = NULL;
+		}
+	} while (list[i-1][0]!='\n'|| i>=100);
+	n = i - 1;
+/*Записываем каждое данное в отдельный массив*/
+	for (i = 0; i < n; i++)
+	{
+		word = strtok(list[i], " ");
+		strcpy(number[i], word);
+		word = strtok(NULL, " ");
+		strcpy(point[i], word);
+		word = strtok(NULL, " ");
+		strcpy(date[i], word);
+		word = strtok(NULL, " ");
+		strcpy(time[i], word);
+		word = strtok(NULL, " ");
+		strcpy(place[i], word);
+		word = strtok(NULL, " \n");
+		strcpy(price[i], word);
+/*Переводим символы времени в само время*/
+		strcpy(time1[i], time[i]);
+		time_ctrl[i] = atoi(time1[i]) * 60;
+		word = strtok(time1[i], ".");
+		word = strtok(NULL, "\0");
+		time_ctrl[i] += atoi(word);
+	}
+/*Вывод расписания и обработка запроса*/
+	do
+	{
+/*Вывод расписания в таблицу(Лишние символы обрезаются в названиях нас. пункт.)*/
+		printf("\nРасписание\nНомер рейса  Пункт назначения  Дата отправления  Время отправления  Общее количество мест  Цена билета\n");
+		for (i = 0; i < n; i++)
+		{
+			printf("%-12s %-17.16s %-17s %-18s %-22s %s\n", number[i], point[i], date[i], time[i], place[i], price[i]);
+			ask_count[i] = 0;  //Обнуление субмассива
+		}
+/*Ввод и обработка запроса*/
+		do
+		{
+			printf("\nВведите запрос: ");
+			fgets(ask, max_len, stdin);
+		} while (ask[0]=='\n');  //Защита от пустой строки
+		word = strtok(ask, " ");
+		strcpy(point1, word);
+		word = strtok(NULL, " ");
+		strcpy(date1, word);
+		word = strtok(NULL, " \n");
+		strcpy(time2, word);
+/*Перевод символов времени в само время*/
+		time_chk = atoi(time2)*60;
+		word = strtok(time2, ".");
+		word = strtok(NULL, "\n");
+		time_chk += atoi(word);
+/*Сравнение исходных данных и запроса*/
+		count = 0;
+		for (i = 0; i < n; i++)
+		{
+			flag = 0;
+			if (strcmp(point[i], point1) == 0)
+				flag += 1;
+			if (strcmp(date[i], date1) == 0)
+				flag += 1;
+			if (time_chk >= time_ctrl[i])
+				flag++;
+			if (flag == 3)
+			{
+				ask_count[i] = 1;
+				count++;
+			}
+		}
+/*Вывод результатов запроса*/
+		if (count == 0)
+			printf("\nНа данный запрос нет подходящих рейсов. Повторите попытку.");
+		if (count == 1)
+			printf("\nНомер рейса, подходящего по данному запросу: ");
+		if (count > 1)
+			printf("\nНомера рейсов, подходящих по данному запросу: ");
+		for (i = 0; i < n; i++)
+		{
+			if (ask_count[i] == 1)
+				printf("%s ", number[i]);
+		}
+		printf("\n\nНажмите Enter для нового запроса\nНажмите Esc для выхода из программы\n");
+	} while (_getch()!=27);
+}

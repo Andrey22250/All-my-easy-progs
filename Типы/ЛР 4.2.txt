@@ -1,0 +1,57 @@
+#include <iostream>
+#include <list>
+#include <Windows.h>
+
+using namespace std;
+
+void Make_Single_List(int n, list<int>& L)
+{
+	int temp;
+	for(int i = 0; i < n; i++)	//Циклический ввод переменных
+	{
+		cout << "Введите значение ";
+		cin >> temp;
+		L.push_back(temp);	//Внести в конец списка элемент
+	}
+}
+
+void Print_Single_List(list<int>& L) {
+	list<int>::iterator it;
+	for (it = L.begin(); it != L.end(); ++it)	//Вывод при помощи итератора
+		cout << *it<< " ";
+	cout << "\n";
+}
+
+void find(list<int>& L1, list<int>& L2, list<int>& L)
+{
+	int flag = 0;	//Флаг, показывающий, что элемент найден
+	list<int>::iterator it1;	//Итераторы - позваляют использовать перебор элементов
+	list<int>::iterator it2;
+	for(it1 = L1.begin();it1 != L1.end(); *it1++)
+	{
+		for (flag = 0, it2 = L2.begin(); it2 != L2.end() && flag == 0; *it2++)	//Простейший перебор элементов списка
+		{
+			if (*it1 == *it2)	//Если ключи равны
+				flag = 1;
+		}
+		if (flag == 0)		//Если похожих элементов не найдено
+			L.push_back(*it1);	//Внести элемент L1 в список L
+	}
+}
+
+int main() {
+	list<int> L1;	//Объявление элементов
+	list<int> L2;
+	list<int> L;
+	int n1, n2;
+	setlocale(LC_ALL, "");
+	SetConsoleCP(1251);
+	cout << "Введите кол-во элементов первого списка: ";
+	cin >> n1;
+	Make_Single_List(n1, L1);
+	cout << "\nВведите кол-во элементов второго списка: ";
+	cin >> n2;
+	Make_Single_List(n2, L2);
+	find(L1, L2, L);
+	Print_Single_List(L);
+}

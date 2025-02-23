@@ -1,0 +1,593 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <Windows.h>
+
+struct ways //Глобальная структура
+{
+	int number;
+	char point[50];
+	int date[3];
+	int time[2];
+	int place;
+	float price;
+}list[100], t;
+//Протопипы функций
+int password();
+int vvod(struct ways list[100], int* count);
+int vivod(struct ways list[100], int* count);
+int vvod_stroki(struct ways list[100], int* count);
+int change_str(struct ways list[100], int* count);
+int delete_str(struct ways list[100], int* count);
+int ask(struct ways list[100], int* count);
+
+int clean() //очистка ввода
+{
+	while (getchar() != '\n');
+	return 1;
+}
+
+int main()  //Основная программа
+{
+	SetConsoleCP(1251); //Возможность вводить русские буквы
+	setlocale(LC_ALL, "rus");
+	char n;
+	int count = 0;
+	do
+	{
+		do
+		{
+			system("cls");
+			printf("Автовокзал. Междугородние рейсы.\n");
+			printf("\nСписок функций:\n1)Ввод и изменение строки\n2)Вывод расписания\n3)Запрос\n\nEsc - выход из программы\n\nВаш выбор: ");
+			n = _getch(); //Ввод символа без нажатия Enter
+			if (n != 27) //Из-за кода Esc
+				printf("%c", n);
+			Sleep(1000);  //Задержки для более удобного отображения
+			switch (n)  //Выбор варианта
+			{
+			case '1':
+			{
+				if (password()==1)
+					vvod(list, &count);  //Функция ввода
+			}
+			break;
+			case '2':  //Функция вывода списка
+			{
+				do {
+					system("cls");
+					vivod(list, &count);
+					Sleep(300);
+					printf("\nНажмите любую клавишу для выхода в главное меню: ");
+				} while (_getch() < 0);
+			}
+			break;
+			case '3':ask(list, &count); break;  //Функция для запроса
+			}
+		} while (n != 27);
+		Sleep(50);
+		system("cls");
+		printf("Вы уверены, что хотите выйти из программы?\n\nEnter - да\nEsc - отмена\n");
+	} while (_getch() != 13);  //Дополнительное подтверждение для выхода
+}
+
+int password()
+{
+	char pswd[15];
+	int i;
+	do
+	{
+		system("cls");  //Очистка экрана
+		printf("Введите пароль администратора: ");  //Ввод и принятие пароля
+		for (i = 0; pswd[i - 1] != 13 && i < 15; i++)
+		{
+			pswd[i] = _getch();
+			if (pswd[i] != 8 && pswd[i] != 13)
+				printf("*");
+			else if (pswd[i] == 8)
+			{
+				if (i > 0)
+					printf("\b \b");
+				if (i >= 1)
+					i -= 2;
+				else if (i == 0)
+					i -= 1;
+			}
+			else if (pswd[i] == 13);
+		}
+		pswd[i - 1] = '\0';
+		if (strcmp(pswd, "24071977F_x") == 0)
+			break;
+		else
+			printf("\n\nВведён неверный пароль. \nНажмите Esc для выхода\nНажмите Enter для повторного ввода");
+	} while (_getch() != 27);
+	if (strcmp(pswd, "24071977F_x") == 0)
+		return 1;
+}
+
+int vvod(struct ways list[100], int* count)  //Функция ввода
+{
+	system("cls");
+	char way;
+	do
+	{
+		system("cls");
+		printf("Выберите функцию:\n1)Полный ввод отдельной строки\n2)Изменение существующей строки\n3)Полное удаление строки\n4)Просмотр списка\n\nEsc - выход в основное меню\n\nВаш выбор: ");
+		way = _getch();
+		if (way != 27)
+			printf("%c", way);
+		Sleep(700);
+		switch (way)  //Разбиение на подфункции
+		{
+		case '1': vvod_stroki(list, &(*count)); break;
+		case '2': change_str(list, &(*count)); break;
+		case '3': delete_str(list, &(*count)); break;
+		case '4':  //Вывод для администратора
+		{
+			do
+			{
+				system("cls");
+				vivod(list, &(*count));
+				Sleep(300);
+				printf("\nНажмите любую клавишу для выхода в главное меню: ");
+			} while (_getch() < 0);
+			system("cls");
+		} break;
+		}
+	} while (way != 27);
+	system("cls");
+	printf("Возврат в главное меню, пожалуйста подождите...");
+	Sleep(700);
+	return 1;
+}
+
+int vvod_stroki(struct ways list[100], int* count)  //Функция добавления строки
+{
+	system("cls");
+	char way;
+	int check;
+	if (*count < 100) 
+	{
+		do
+		{
+			printf("Ввод строки\n");
+			printf("\nНажмите Enter для ввода строки\nНажмите Esc для выхода в меню ввода\n\nВаш выбор: ");
+			way = _getch();
+			Sleep(300);
+			system("cls");
+			if (way == 13 && *count < 100)
+			{
+				printf("Пути назад нет\n\n");  //Ввод строки по элементам структуры
+				do
+				{
+					printf("Введите номер рейса: ");
+					check = scanf("%d", &list[*count].number);
+					clean();
+				} while (list[*count].number <= 0 || list[*count].number >= 999999 || check != 1);
+				do
+				{
+					printf("Введите пункт назначения: ");
+					scanf("%s", &list[*count].point);
+					clean();
+				} while (strlen(list[*count].point) > 50);
+				do
+				{
+					printf("Введите дату отправления в формате dd.mm.yyyy: ");
+					check = scanf("%d.%d.%d", &list[*count].date[0], &list[*count].date[1], &list[*count].date[2]);
+					clean();
+				} while ((list[*count].date[0] > 31 || list[*count].date[0] <= 0) || (list[*count].date[1] <= 0 || list[*count].date[1] > 12) || list[*count].date[2] < 1900 || check != 3);
+				do
+				{
+					list[*count].time[0] = list[*count].time[1] = -1;
+					printf("Введите время отправления в формате hh:mm: ");
+					check = scanf("%d:%d", &list[*count].time[0], &list[*count].time[1]);
+					clean();
+				} while ((list[*count].time[0] < 0 || list[*count].time[0]>23) || (list[*count].time[1] < 0 || list[*count].time[1]>59) || check != 2);
+				do
+				{
+					printf("Введите общее количество мест: ");
+					check = scanf("%d", &list[*count].place);
+					clean();
+				} while (list[*count].place <= 0 || list[*count].place >= 999999 || check != 1);
+				do
+				{
+					printf("Введите цену билета: ");
+					check = scanf("%f", &list[*count].price);
+					clean();
+				} while (list[*count].price <= 0 || check != 1);
+				(*count)++;
+				Sleep(550);
+				system("cls");
+			}
+		} while (way != 27 && *count < 100);
+	}
+	else
+	{
+		system("cls");
+		printf("Ошибка. Слишком много строк. Пожалуйста, удалите одну из строк списка.\n");
+		Sleep(2000);
+	}
+	printf("Возврат в меню изменений, пожалуйста подождите...");
+	Sleep(900);
+	system("cls");
+	return 1;
+}
+
+int change_str(struct ways list[100], int* count)  //Функция изменения строки
+{
+	if (*count > 0)
+	{
+		int str_num;
+		int str, i, flag, check;
+		char way;
+		do
+		{
+			system("cls");
+			printf("Изменение существующей строки\n\n");
+			vivod(list, &(*count));
+			printf("\nНажмите Enter для изменения информации о рейсе\nНажмите Esc для выхода в меню изменений");
+			way = _getch();
+			if (way == 13)
+			{
+				do {
+					printf("\n\nВведите номер рейса: ");  //Поиск по 1 элементу
+					check = scanf("%d", &str_num);
+					clean();
+				} while (str_num <= 0 || str_num > 999999 || check != 1);
+				for (i = flag = 0, str = -1; i < *count && flag == 0; i++)
+				{
+					if (str_num == list[i].number)
+					{
+						str = i; 
+						flag = 1;
+					}
+				}
+				if (str >= 0) //Изменение строки поэлементно
+				{
+					do
+					{
+						system("cls");
+						printf("Выбрана строка:\nНомер рейса  Пункт назначения  Дата отправления  Время отправления  Общее количество мест  Цена билета\n%-12d %-17.16s %.2d.%.2d.%-11d %.2d:%-15.2d %-22d %.2f\n", list[str].number, list[str].point, list[str].date[0], list[str].date[1], list[str].date[2], list[str].time[0], list[str].time[1], list[str].place, list[str].price);
+						printf("\nВыберите элемент для изменения:\n1 - Номер рейса\n2 - Пункт назначения\n3 - Дата отправления\n4 - Время отправления\n5 - Общее количество мест\n6 - Цена билета\n\nВаш выбор: ");
+						flag = _getch();
+						if (flag != 27)
+							printf("%c", flag);
+					} while (flag < '0' || flag > '6');
+					switch (flag)  //Выбор действия и ввод соответствующего поля
+					{
+					case '1':
+						do
+						{
+							printf("\nВведите новый номер рейса: ");
+							check = scanf("%d", &list[str].number);
+							clean();
+						} while (list[str].number <= 0 || list[str].number >= 999999 || check != 1);
+						break;
+					case '2':
+						do
+						{
+							printf("\nВведите новый пункт назначения: ");
+							scanf("%s", &list[str].point);
+							clean();
+						} while (strlen(list[str].point) > 50);
+						break;
+					case '3':
+						do
+						{
+							printf("\nВведите новую дату отправления в формате dd.mm.yyyy: ");
+							check = scanf("%d.%d.%d", &list[str].date[0], &list[str].date[1], &list[str].date[2]);
+							clean();
+						} while ((list[str].date[0] > 31 || list[str].date[0] <= 0) || (list[str].date[1] <= 0 || list[str].date[1] > 12) || list[str].date[2] < 1900 || check != 3);
+						break;
+					case '4':
+						do
+						{
+							list[str].time[0] = list[str].time[1] = -1;
+							printf("\nВведите новое время отправления в формате hh:mm: ");
+							check = scanf("%d:%d", &list[str].time[0], &list[str].time[1]);
+							clean();
+						} while ((list[str].time[0] < 0 || list[str].time[0]>23) || (list[str].time[1] < 0 || list[str].time[1]>59) || check != 2);
+						break;
+					case '5':
+						do
+						{
+							printf("\nВведите новое общее количество мест: ");
+							check = scanf("%d", &list[str].place);
+							clean();
+						} while (list[str].place <= 0 || list[str].place >= 999999 || check != 1);
+						break;
+					case '6':
+						do
+						{
+							printf("\nВведите новую цену билета: ");
+							check = scanf("%f", &list[str].price);
+							clean();
+						} while (list[str].price <= 0 || check != 1);
+						break;
+					}
+				}
+				else  //Сообщения ошибок
+				{
+					system("cls");
+					printf("Такой рейс отсутствует в расписании, повторите попытку");
+					Sleep(3000);
+				}
+			}
+		} while (way != 27);
+	}
+	else //Сообщения ошибок
+	{
+		system("cls");
+		printf("Ошибка. Нет строк для изменения.");
+	}
+	printf("\n\nВозврат в меню изменений, пожалуйста подождите...");
+	Sleep(1500);
+	system("cls");
+	return 1;
+}
+
+int delete_str(struct ways list[100], int* count)  //Функция удаления строки
+{
+	system("cls");
+	char way;
+	do
+	{
+		if (*count >= 1)
+		{
+			int str_num, check;
+			int str, i, flag;
+			do
+			{
+				printf("Удаление существующей строки\n\n");
+				vivod(list, &(*count));
+				printf("\nДля удаления строки нажмите Enter\nДля выхода в меню изменений нажмите Esc\n");
+				way = _getch();
+				if (way == 13)
+				{
+					do
+					{
+						printf("\nВведите номер рейса: "); //Выбор строки
+						check = scanf("%d", &str_num);
+						clean();
+					} while (str_num < 0 || str_num >999999 || check != 1);
+					for (i = flag = 0, str = -1; i < *count && flag == 0; i++)
+					{
+						if (str_num == list[i].number)
+						{
+							str = i; 
+							flag = 1;
+						}
+					}
+					if (str != -1)
+					{
+						printf("\nВы уверены, что хотите удалить данную строку? Отменить выбор не получится\nНажмите Enter для удаления\nНажмите Esc для отмены\n");
+						way = _getch();  //Подтверждение
+						if (way == 13)
+						{
+							for (i = str; i < *(count)-1; i++)
+								list[i] = list[i + 1];
+							(*count)--;
+							system("cls");
+							printf("Удаление выполнено успешно.");
+							Sleep(800);
+						}
+						else if (way == 27)
+						{
+							system("cls");
+							Sleep(300);
+						}
+						way = 13;
+					}
+					else //Сообщения ошибок
+					{
+						printf("Ошибка. Введена неверная строка. Пожалуйста, повторите попытку.");
+						Sleep(1200);
+						system("cls");
+					}
+				}
+			} while (way != 27 && *count > 1);
+		}
+		else if (*count == 0)  //Сообщение о ошибке
+		{
+			system("cls");
+			printf("Ошибка. Нет строк для удаления.");
+			Sleep(1500);
+			way = 27;
+		}
+		system("cls");
+	} while (way != 27);
+	return 1;
+}
+
+int vivod(struct ways list[100], int* count)  //Функция вывода списка
+{
+	if (*count > 0)
+	{
+		printf("Список рейсов:\n"); //Шапка
+		printf("\nНомер рейса  Пункт назначения  Дата отправления  Время отправления  Общее количество мест  Цена билета\n");
+		if (*count > 0)
+			for (int i = 0; i < *count; i++) //Строки
+			{
+				printf("%-12d %-17.16s %.2d.%.2d.%-11d %.2d:%-15.2d %-22d %.2f\n", list[i].number, list[i].point, list[i].date[0], list[i].date[1], list[i].date[2], list[i].time[0], list[i].time[1], list[i].place, list[i].price);
+			}
+		Sleep(250);
+	}
+	else  //Сообщение о ошибке
+	{
+		printf("Ошибка. В расписании нет рейсов\n");
+		Sleep(850);
+	}
+	return 1;
+}
+
+int ask(struct ways list[100], int* count)  //Функция для запроса
+{
+	system("cls");
+	char way, way1, flag, f_point[50];
+	float f_price;
+	int f_number, f_date[3], f_time[2], f_place, check;
+	int mass[100], i;
+	do {
+		if (*count > 0)
+		{
+			do
+			{
+				system("cls");
+				printf("Запрос по списку\n\n");
+				vivod(list, &(*count));
+				printf("\nНажмите Enter для выполнения запроса\nНажмите Esc для выхода в главное меню\n");
+				for (i = 0; i < *count; i++)  //Запоминаем все номера рейсов
+					mass[i] = list[i].number;
+				way = _getch();
+				way1 = 0;
+				Sleep(550);
+				if (way == 13 && way1 != 27)
+				{
+					do
+					{
+						do
+						{
+							printf("\nВыберите поле для поиска:\n1 - Номер рейса\n2 - Пункт назначения\n3 - Дата отправления\n4 - Время отправления\n5 - Общее количество мест\n6 - Цена билета\n\nВаш выбор: ");
+							flag = _getch();
+							if (flag != 27)
+								printf("%c", flag);
+						} while (flag < '0' || flag > '6');
+						Sleep(350);
+						switch (flag)  //Выбор поля
+						{
+						case '1':
+							do
+							{
+								printf("\nВведите номер рейса: ");
+								check = scanf("%d", &f_number);
+								clean();
+							} while (f_number <= 0 || f_number >= 999999 || check != 1);
+							break;
+						case '2':
+							do
+							{
+								printf("\nВведите пункт назначения: ");
+								scanf("%s", &f_point);
+								clean();
+							} while (strlen(f_point) > 50);
+							break;
+						case '3':
+							do
+							{
+								printf("\nВведите дату отправления в формате dd.mm.yyyy: ");
+								check = scanf("%d.%d.%d", &f_date[0], &f_date[1], &f_date[2]);
+								clean();
+							} while ((f_date[0] > 31 || f_date[0] <= 0) || (f_date[1] <= 0 || f_date[1] > 12) || f_date[2] < 1900 || check != 3);
+							break;
+						case '4':
+							do
+							{
+								f_time[0] = f_time[1] = -1;
+								printf("\nВведите время отправления, не позднее которого отправляется рейс, в формате hh:mm: ");
+								check = scanf("%d:%d", &f_time[0], &f_time[1]);
+								clean();
+							} while ((f_time[0] < 0 || f_time[0]>23) || (f_time[1] < 0 || f_time[1]>59) || check != 2);
+							break;
+						case '5':
+							do
+							{
+								printf("\nВведите максимальное общее количество мест: ");
+								check = scanf("%d", &f_place);
+								clean();
+							} while (f_place <= 0 || f_place >= 999999 || check != 1);
+							break;
+						case '6':
+							do
+							{
+								printf("\nВведите максимальную цену цену билета: ");
+								check = scanf("%f", &f_price);
+								clean();
+							} while (f_price <= 0 || check != 1);
+							break;
+						}
+						Sleep(700);
+						switch (flag)  //Если не нашли - убираем из списка
+						{
+						case '1':
+						{
+							for (i = 0; i < *count; i++)
+							{
+								if (list[i].number != f_number)
+									mass[i] = -1;
+							}
+						}break;
+						case '2':
+						{
+							for (i = 0; i < *count; i++)
+							{
+								if (strcmp(list[i].point, f_point) != 0)
+									mass[i] = -1;
+							}
+						}break;
+						case '3':
+						{
+							for (i = 0; i < *count; i++)
+							{
+								if (list[i].date[0] != f_date[0] || list[i].date[1] != f_date[1] || list[i].date[2] != f_date[2])
+									mass[i] = -1;
+							}
+						}break;
+						case '4':
+						{
+							for (i = 0; i < *count; i++)
+							{
+								if ((list[i].time[0] * 60 + list[i].time[1]) > (f_time[0] * 60 + f_time[1]))
+									mass[i] = -1;
+							}
+						}break;
+						case '5':
+						{
+							for (i = 0; i < *count; i++)
+							{
+								if (list[i].place > f_place)
+									mass[i] = -1;
+							}
+						}break;
+						case '6':
+						{
+							for (i = 0; i < *count; i++)
+							{
+								if (list[i].price > f_price)
+									mass[i] = -1;
+							}
+						}break;
+						}
+						Sleep(700);
+						printf("\nРезультаты поиска:\n\n");
+						for (i = check = 0; i < *count && check == 0; i++)
+							if (mass[i] > -1)
+								check = 1;
+						if (check == 1)
+							printf("Номер рейса  Пункт назначения  Дата отправления  Время отправления  Общее количество мест  Цена билета\n");
+						for (i = 0, check = 0; i < *count; i++)
+							if (mass[i] != -1)
+							{
+								check = 1;
+								printf("%-12d %-17.16s %.2d.%.2d.%-11d %.2d:%-15.2d %-22d %.2f\n", list[i].number, list[i].point, list[i].date[0], list[i].date[1], list[i].date[2], list[i].time[0], list[i].time[1], list[i].place, list[i].price);
+							}
+						if (check == 0)
+							printf("Поиск не выдал результата.\n");
+						Sleep(800);
+						printf("\nНажмите Enter для повторного ввода\nНажмите Esc для выхода в меню запроса\n");
+						way1 = _getch();
+					} while (way1 != 27);
+				}
+			} while (way != 27);
+		}
+		if (*count == 0)  //Сообщение о ошибке
+		{
+			system("cls");
+			printf("Ошибка. Нет введённых строк.");
+			Sleep(1200);
+			way = 27;
+		}
+	} while (way != 27);
+	printf("\nВозврат в главное меню, пожалуйста подождите...");
+	Sleep(1200);
+	return 1;
+}

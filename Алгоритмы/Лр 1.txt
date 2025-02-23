@@ -1,0 +1,206 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+
+using namespace std;
+
+int matrin(double a[][50], double x[50], int *sizematrm, int *sizematrn)  //Функция чтения матрицы и вывода её на экран
+{
+    char temp;
+    ifstream file1("input.txt");
+    if (!file1)
+        return -1;
+    while (file1.get(temp)) // Определение размерности матрицы
+    {
+        if (temp == '\n')
+            (*sizematrm)++;
+        else if (temp == ' ' && *sizematrm == 1)
+            (*sizematrn)++;
+    }
+    if (*sizematrm != *sizematrn - 1)
+    {
+        cout << "Неверная размерность матрицы. Не квадратная";
+        return -1;
+    }
+    file1.clear();
+    file1.seekg(0);
+    cout << "Исходная матрица:\n";
+    for (int i = 0; i < *sizematrm; i++) //Считывание матрицы и столбца свободных членов
+    {
+        for (int j = 0; j < *sizematrn; j++)
+        {
+            x[j] = -1;
+            file1 >> a[i][j];
+            cout << a[i][j] << ' ';
+            if (*sizematrn - 2 == j)
+                cout << "| ";
+        }
+        cout << '\n';
+    }
+    file1.close();
+    return 1;
+}
+
+int calc(double a[][50], double x[50], int *sizematrm, int *sizematrn) //Вычисление определителя и искомых решений
+{
+    int count = 0;
+    for(int i = 0; i<*sizematrm; i++)   //Поиск индекса наибольшего элемента
+    {
+        int indm = i;
+        for (int j = i + 1; j < *sizematrm; j++)
+        {
+            if (a[j][i] > a[indm][i])
+            {
+                indm = j;
+            }
+        }
+        if(indm!=i)
+        {
+            for (int j = 0; j < 2 * *sizematrn - 1; j++) //Выбор главного элемента
+            {
+                double C = a[i][j]; a[i][j] = a[indm][j]; a[indm][j] = C;
+            }
+            count++;
+        }
+    }
+    double opred = 1; //Нахождение определителя
+    for (int k = 0; k < *sizematrm; k++) //Прямой ход метода Гаусса
+    {
+        for (int i = k+1; i < *sizematrm; i++)
+        {
+            if (a[k][k] == 0)
+            {
+                ofstream file1("output.txt");
+                file1 << "Матрица вырождена";
+                file1.close();
+                return -1;
+            }
+            a[i][k] = a[i][k] / a[k][k];
+            for (int j = k+1; j < *sizematrn; j++)
+            {
+                a[i][j] = a[i][j] - a[i][k] * a[k][j];
+            }
+        }
+    }
+    for (int i = 0; i < *sizematrm; i++)
+        opred *= a[i][i];
+    if (count % 2 != 0 && count > 0)
+        opred *= -1;
+    for(int i = *sizematrm - 1; i>=0; i--) //Обратный ход метода Гаусса и запись корней
+    {
+        for (int j = *sizematrn - 1; j != i; j--)
+        {
+            x[i] -= a[i][j] * x[j];
+        }
+        x[i] = (x[i] + 1)/a[i][i];
+    }
+    ofstream file2("output.txt");
+    if (!file2)
+        return -2;
+    file2 << "Решение системы:" << endl;
+    for (int i = 0; i < *sizematrn - 1; i++)
+    {
+        file2 << "X" << i + 1 << ": " << round(x[i]*100)/100 << endl;
+    }
+    file2 << "Определитель матрицы: " << opred << endl;
+    file2.close();
+}
+
+int Incons(double a[][50], double x[50], int* sizematrm, int* sizematrn) //Поиск невязки и обратной матрицы
+{
+    double temp[50][50] = {0}, incons[50] = {0}, swap;
+    ifstream file1("input.txt");
+    if (!file1)
+        return -1;
+    for (int i = 0; i < *sizematrm; i++)    //Запись временной матрицы
+    {
+        for (int j = 0; j < *sizematrn; j++)
+        {
+            file1 >> temp[i][j];
+        }
+    }
+    file1.close();
+    ofstream file2("output.txt", ios::app);
+    if (!file2)
+        cerr << "Ошибка открытия файла";
+    file2 << "\nВектор невязки:" << endl;
+    for(int i=0; i<*sizematrm; i++) //Вычисление невязки
+    {
+        for (int j = 0; j < *sizematrn - 1; j++)
+        {
+            incons[i] += temp[i][j] * x[j];
+        }
+        incons[i] -= temp[i][*sizematrn - 1];
+        temp[i][*sizematrn - 1] = 0;
+        file2 << "r " << i + 1 << ": " << incons[i] << endl;
+    }
+    for (int i = 0; i < *sizematrm; i++) //Запись единичной матрицы справа
+    {
+        for (int j = *sizematrn - 1; j < 2 * (*sizematrn - 1); j++)
+        {
+            if (j == (i + *sizematrm))
+                temp[i][j] = 1;
+            else temp[i][j] = 0;
+        }
+    }
+    for (int i = 0; i < *sizematrn; i++)
+    {
+        int indm = i;
+        for (int j = i + 1; j < *sizematrm; j++) //Выбор главного элемента
+        {
+            if (temp[j][i] > temp[indm][i]) //Поиск максимального элемента столбца
+            {
+                indm = j;
+            }
+        }
+        if (indm != 0) //Перестановка строк
+            for (int j = 0; j < 2 * *sizematrn - 1; j++) 
+            {
+                double C = temp[i][j]; temp[i][j] = temp[indm][j]; temp[indm][j] = C;
+            }
+    }
+    for (int i = 0; i < *sizematrm; i++) //Делаем ведущий элемент равным 1
+    {
+        for (int j = 0; j < *sizematrm; j++) 
+        {
+            if (j != i)
+            {
+                swap = temp[j][i] / temp[i][i];
+                for (int k = 0; k < 2 * *sizematrm; k++)
+                {
+                    temp[j][k] -= temp[i][k] * swap;
+                }
+            }
+        }
+    }
+    for (int i = 0; i < *sizematrm; i++) //Обнуление остальных элементов строки
+    {
+        swap = temp[i][i];
+        for (int j = 0; j < 2 * *sizematrm; j++) {
+
+            temp[i][j] = temp[i][j] / swap;
+        }
+    }
+    file2 << "\nОбратная матрица:\n"; //Вывод обратной матрицы в файл
+    for(int i = 0; i<*sizematrm; i++)
+    {
+        for (int j = *sizematrn - 1; j < 2 * (*sizematrn - 1); j++)
+            file2 << round(temp[i][j] * 1000) / 1000 << ' ';
+        file2 << endl;
+    }
+    file2.close();
+}
+
+int main()
+{
+    SetConsoleCP(1251); //Поддержка русского языка
+    SetConsoleOutputCP(1251);
+	double a[50][50] = {0}, x[50] = {0};
+    int sizematrm = 1, sizematrn = 1;
+    if (matrin(a, x, &sizematrm, &sizematrn) == -1)
+        return -1;
+    if (calc(a, x, &sizematrm, &sizematrn) == -1)
+        return -1;
+    Incons(a, x, &sizematrm, &sizematrn);
+}

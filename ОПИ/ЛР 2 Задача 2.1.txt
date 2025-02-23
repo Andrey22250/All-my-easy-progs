@@ -1,0 +1,14 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <math.h>
+
+int main()
+{
+	setlocale(LC_ALL, "rus"); //Устанавливаем русский язык
+	short int a, b, c;
+	a = 32767;
+	printf("Введите значение переполнения правой границы числа : ");
+	scanf("%d", &c);
+	b = a + c;
+	printf("Число, получаемое при переполнении : %d", b); //Выводим данные
+}

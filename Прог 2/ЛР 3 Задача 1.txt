@@ -1,0 +1,82 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+#include <Windows.h>
+
+#define max_len 50
+
+int main()
+{
+	//Возможность вводить русские символы
+	SetConsoleCP(1251);
+	setlocale(LC_ALL, "rus");
+	struct subject
+	{
+		char name[max_len];
+		char first_name[max_len];
+		char second_name[max_len];
+		char middle_name[max_len];
+		int hours;
+	}list[100], t;
+	int i, j, n, flag;
+	char sec_name[max_len], mid_nam[max_len], fis_nam[max_len];
+	printf("Учебные дисциплины\n\n");
+	/*Ввод списка*/
+	do
+	{
+		printf("Введите количество предметов (не более 100): ");
+		scanf("%d", &n);
+		while (getchar() != '\n'); // Очистка входного потока
+	} while (n < 1 || n>100);
+	for (i = 0; i < n; i++)
+	{
+		printf("Введите информацию о %d-м предмете: ", i + 1);
+		scanf("%s%s%s%s%d", &list[i].name, &list[i].second_name, &list[i].first_name, &list[i].middle_name, &list[i].hours);
+		while (getchar() != '\n');
+	}
+	/*Вывод списка*/
+	printf("\nСписок предметов:\n");
+	for (i = 0; i < n; i++)
+	{
+		printf("%-25s %-25s %-15s %-15s %d", list[i].name, list[i].second_name, list[i].first_name, list[i].middle_name, list[i].hours);
+		printf("\n");
+	}
+	/*Сортировка по алфавиту*/
+	for (j = 1; j < n; j++)
+		for (i = 0; i < n - 1; i++)
+		{
+
+			if (strcmp(list[i].name, list[i + 1].name) > 0)
+			{
+				t = list[i];
+				list[i] = list[i + 1];
+				list[i + 1] = t;
+			}
+		}
+	/*Вывод отсортированного списка*/
+	printf("\nСписок предметов:\n");
+	for (i = 0; i < n; i++)
+	{
+		printf("%-25s %-25s %-15s %-15s %d", list[i].name, list[i].second_name, list[i].first_name, list[i].middle_name, list[i].hours);
+		printf("\n");
+	}
+	/*Поиск по преподавателю*/
+	do
+	{
+		flag = 1;
+		printf("\nВведите ФИО преподавателя: ");
+		scanf("%s%s%s", &sec_name, &fis_nam, &mid_nam);
+		while (getchar() != '\n');
+		for (i = 0; i < n; i++)
+			if (strcmp(sec_name, list[i].second_name) == 0 && strcmp(fis_nam, list[i].first_name) == 0 && strcmp(mid_nam, list[i].middle_name) == 0)
+			{
+				flag = 0;
+				printf("%-25s %-25s %-15s %-15s %d", list[i].name, list[i].second_name, list[i].first_name, list[i].middle_name, list[i].hours);
+				printf("\n");
+			}
+		if (flag == 1)
+			printf("\nУ данного преподователя нет реализуемых дисциплин\n");
+		printf("\nНажмите Enter для нового поиска\nНажмите Esc для выхода из программы\n");
+	} while (_getch() != 27);
+}

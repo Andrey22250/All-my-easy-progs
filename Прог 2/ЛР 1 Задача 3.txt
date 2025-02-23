@@ -1,0 +1,106 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+
+#define max_words 750
+#define max_len 1000
+#define max_word_len 1000
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	char words[max_words][max_word_len], text[max_len], flag;
+	int i, j, len, n = 0, s, k;
+	int word_len[max_words];
+	printf("Смена s и k-ой буквы. Стандартные функции.\nВнимание! Максимум символов в тексте - 999!\n\n");
+	do
+	{
+/*Ввод текста*/
+		printf("Введите текст посимвольно (конец строки - Enter): ");
+		for (i = len = 0; text[i - 1] != '\n' && len < max_len; i++, len++)
+		{
+			scanf("%c", &text[i]);
+		}
+/*Ввод s и k*/
+		do
+		{
+			printf("Введите s и k: ");
+			scanf("%d%d", &s, &k);
+			while (getchar() != '\n');
+		} while (s >= k || k <= 0 || k > 9 || s <= 0);
+		s--; k--;
+/*Вывод введённого теста*/
+		printf("\nВы ввели текст: ");
+		for (i = 0; i < len; i++)
+		{
+			printf("%c", text[i]);
+		}
+		if (len == max_len && text[len - 1] != '\n') //Если последний символ не равен \n - меняем его
+			text[len - 1] = '\n';
+/*Выделение слов в тексте*/
+		n = 0;
+		for (i = 0; text[n - 1] != '\n'; i++, n++)
+		{
+			for (j = 0; n < len && text[n] != ' ' && text[n] != '\n'; j++, n++)
+			{
+				words[i][j] = text[n];
+				words[i][j + 1] = ' ';
+			}
+			if ((text[n] == ' ' && ' ' == text[n + 1]) || text[n + 1] == '\n')
+				i--;
+			j = 0;
+		}
+		if (text[0] == ' ' || text[0] == '\n' || text[0] == ',' || text[0] == '.' || text[0] == '!' || text[0] == '?' || text[0] == '-')	//Защита от ввода пустой строки или строки разделителей
+			words[0][0] = '\0';
+/*Переводим все пробелы в \0*/
+		for (n = 0; n < i; n++)
+		{
+			for (j = 0; words[n][j] != '\0'; j++)
+			{
+				if (words[n][j + 1] == ' ')
+					words[n][j + 1] = '\0';
+			}
+			j = 0;
+		}
+/*Считаем кол-во знаков в каждом слове*/
+		for (n = 0, j = 0; n < i; n++)
+		{
+			word_len[n] = 0;
+			while (words[n][j] != '\0')
+			{
+				word_len[n] += 1; j++;
+			}
+			if (words[n][j - 1] == ',' || words[n][j - 1] == '-' || words[n][j - 1] == '.' || words[n][j - 1] == '!' || words[n][j - 1] == '?')
+				word_len[n] -= 1;
+			j = 0;
+		}
+/*Преобразуем слово по правилу*/
+		for (i = 0; i < n; i++)
+			if (word_len[i] - 1 >= k)
+			{
+				flag = words[i][s];
+				for (j = s; j < k; j++)
+				{
+					words[i][j] = words[i][j + 1];
+				}
+				words[i][k] = flag;
+			}
+/*Вывод текста*/
+		printf("\nТекст с правилом: ");
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; words[i][j] != '\0'; j++)
+			{
+				printf("%c", words[i][j]);
+				if (words[i][j + 1] == '\0')
+					printf(" ");
+			}
+			while (words[i + 1][0] == '\0' && i < n)
+				i++;
+		}
+		if (words[0][0] == '\0')
+			printf("Ошибка. Введена неверная строка.");
+		printf("\n\nНажмите Enter для повторного запуска программы\nНажмите Esc для выхода из программы\n\n");
+	} while (_getch() != 27);
+}

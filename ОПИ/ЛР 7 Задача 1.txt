@@ -1,0 +1,123 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <Windows.h>
+#define N 31
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	double a[N][N], b[N][N], sumd[N], sumr[N], sumdoh, sumras, osumd, osumr;
+	int i, j, n, f, countd, countr, msg;
+	printf("Анализ бюджета\n");
+	do
+	{
+		countd = countr = osumd = osumr = 0;
+		//Указываем количество дней		
+		do
+		{
+			Sleep(1000);  //Задержка для более удобной работы с программой
+			printf("\nВведите количество учётных дней (не более 31): ");
+			scanf("%d", &n);
+			while (getchar() != '\n');  //Очистка потока
+		} while (n < 1 || n>31);
+		//Заполняем доходы и расходы		
+		for (i = 0; i < n; i++)
+		{
+			Sleep(700);
+			do
+			{
+				printf("\nВведите количество доходов за %d день: ", i + 1);
+				scanf("%d", &f);
+				while (getchar() != '\n');		//Очистка потока
+				countd += f;					//Считаем количество доходов
+			} while (f < 0);
+			if (f > 0)
+			{
+				printf("\nДоходы за %d день:\n", i + 1);
+				sumdoh = 0;
+				for (j = 0; j < f; j++)
+					do
+					{
+						printf("Введите %d доход: ", j + 1);
+						scanf("%lf", &a[i][j]);
+						while (getchar() != '\n');		//Очистка потока
+					} while (a[i][j] <= 0);
+					sumdoh += a[i][j];  //Сумма доходов на данной недели
+					osumd += a[i][j];   //Общая сумма доходов
+					sumd[i] = sumdoh;
+			}
+			else if (f == 0)
+				sumd[i] = 0;
+			Sleep(500);
+			f = -1;
+			do
+			{
+				printf("\nВведите количество расходов за %d день: ", i + 1);
+				scanf("%d", &f);
+				while (getchar() != '\n');	//Очистка потока
+				countr += f;			    //Считаем количество расходов
+			} while (f < 0);
+			if (f > 0)
+			{
+				sumras = 0;
+				printf("\nРасходы за %d день:\n", i + 1);
+				for (j = 0; j < f; j++)
+					do
+					{
+						printf("Введите %d расход: ", j + 1);
+						scanf("%lf", &b[i][j]);
+						while (getchar() != '\n'); 		//Очистка потока
+					} while (b[i][j] <= 0);
+					sumras += b[i][j];  //Сумма расходов на данной неделе
+					osumr += b[i][j];   //Общая сумма расходов
+					sumr[i] = sumras;			//Записываем сумму расходов данной недели в массив
+			}
+			else if (f == 0)
+				sumr[i] = 0;
+		}
+		Sleep(700);
+		//Работа со статистикой
+		printf("\nВыберете функцию из предложенных:\n1.Общий доход за определённый день\n2.Общий расход за определённый день\
+		\n3.Сумма всех доходов\n4.Сумма всех расходов\n5.Общий остаток по итогу месяца\n6.Общее количество доходов и общее количество расходов");
+		do
+		{
+			printf("\n\nВаш вариант: ");
+			scanf("%d", &msg);
+			while (getchar() != '\n');		//Очистка потока
+			switch (msg)
+			{
+			case 1:
+			{
+				do
+				{
+					printf("Введите номер дня: ");
+					scanf("%d", &i);
+					while (getchar() != '\n'); 		//Очистка потока
+				} while (i<1 || i>n);
+				printf("Сумма доходов за %d день: %.2lf", i, sumd[i - 1]);
+			}
+			break;
+			case 2:
+			{
+				do 
+				{
+					printf("Введите номер дня: ");
+					scanf("%d", &i);
+					while (getchar() != '\n'); 		//Очистка потока
+				} while (i<1 || i>n);
+				printf("Сумма расходов за %d день: %.2lf", i, sumr[i - 1]);
+			}
+			break;
+			case 3: printf("Сумма всех доходов: %.2lf", osumd); break;
+			case 4: printf("Сумма всех расходов: %.2lf", osumr); break;
+			case 5: printf("Общий остаток по итогу месяца: %.2lf", osumd - osumr); break;
+			case 6: printf("Общее количество доходов: %d\nОбщее количество расходов: %d", countd, countr); break;
+			default:printf("Неверный ввод"); break;
+			}
+			printf("\n\nНажмите Enter для вывода другой статистики\nНажмите ESC для выхода из статистики");  //Выход из статистики
+		} while (_getch() != 27);
+		Sleep(500);
+		printf("\n\nНажмите Enter для повторного ввода\nНажмите ESC для выхода из программы\n");    //Выход из программы
+	} while (_getch() != 27);
+}

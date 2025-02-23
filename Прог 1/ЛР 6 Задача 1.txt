@@ -1,0 +1,41 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#define N 10
+
+int main()
+{
+	setlocale(LC_ALL, "rus");
+	int n, i, num, d, count;
+	float a[N], b[N], c;
+	printf("Обработка массива\n");
+	do
+	{
+		do
+		{
+			d = 1;
+			count = 0;
+			printf("\nВведите количество элементов массива n, n <= %d: ", N);
+			scanf("%d", &n);
+		} while (n<1 || n>N);
+		for (i = 0; i < n; i++)
+			a[i] = pow(i, 4);
+		printf("\nМассив a: ");
+		for (i = 0; i < n; i++)
+			printf("%g ", a[i]);
+		for (i = 0; i < n; i++)
+		{
+			d = (i + 1) * d;
+			b[i] = a[i] / d;
+		}
+		printf("\nМассив b: ");
+		for (i = 0; i < n; i++)
+			printf("%g ", b[i]);
+		printf("\n\nВведите число c: ");
+		scanf("%f", &c);
+		for (i = 0; i < n; i++)
+			if (b[i]<=c)
+				count += 1;
+		printf("Количество элементов, не превышающих c: %d\n\nНажмите Enter для повторного запуска программы\nНажмите Esc для выхода из программы\n", count);
+	} while (_getch()!=27);
+}

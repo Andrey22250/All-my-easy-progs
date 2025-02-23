@@ -1,0 +1,25 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+
+int main()
+{
+	/*Использование русского языка*/
+	setlocale(LC_ALL, "rus");
+	/*Ввод переменных*/
+	int operand, maska, set, sel, cln, rev;	
+	printf("Введите операнд в шестнадцатиричном формате:");
+	scanf("%x", &operand);
+	printf("Введите маску в шестнадцатиричном формате:");
+	scanf("%x", &maska);
+	/*Операции*/
+	set = operand | maska;	/*Установка битов по маске*/
+	sel = operand & maska;	/*Выделение битов по маске*/
+	cln = operand & ~maska;	/*Очистка битов по маске*/
+	rev = operand ^ maska;	/*Инвертирование битов по маске*/
+	/*Выводы*/
+	printf("\nУстановка битов по маске:%x", set);
+	printf("\n\nВыделение битов по маске:%x", sel);
+	printf("\n\nОчистка битов по маске:%x", cln);
+	printf("\n\nИнвертирование битов по маске:%x\n", rev);
+	return 0;
+}

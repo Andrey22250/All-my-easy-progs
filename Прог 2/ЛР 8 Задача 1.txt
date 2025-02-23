@@ -1,0 +1,149 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <conio.h>
+#include <Windows.h>
+#define N 1000
+
+int clean()	//Очистка потока
+{
+	while (getchar() != '\n');
+	return 1;
+}
+
+class bank	//Описание класса
+{
+private:
+	int count;
+	float money[N];
+public:
+	bank();
+	bank(int i);
+	~bank();
+	int set_money();
+	float get_money(int i);
+	int set_count(int count);
+	int get_count();
+	int putin(int i, float mon);
+	int getin(int i, float mon);
+	int sum();
+	int print();
+};
+
+bank::bank()	//Конструктор без параметров
+{
+	count = money[0] = 0;
+	printf("Банк открыт!\n");
+}
+
+bank::bank(int i)	//Коструктор с параметром
+{
+	this->count=i;
+	for (i = 0; i < count; i++)
+	{
+		this->money[i] = 0;
+	}
+	printf("Ячейки готовы к использованию!\n");
+}
+
+bank::~bank()	//Деструктор
+{
+	printf("Банк закрыт!\n");
+}
+
+int bank::set_count(int count)	//Установка кол-ва ячеек
+{
+	this->count = count;
+	return 1;
+}
+
+int bank::get_count()	//Получение кол-ва ячеек
+{
+	return count;
+}
+
+int bank::set_money()	//Установка кол-ва денег в ячейке
+{
+	int check;
+	for (int k = 0; k < count; k++)
+	{
+		do
+		{
+			printf("Введите сумму в ячееке %d: ", k + 1);
+			check = scanf("%f", &money[k]);
+			clean();
+		} while (money[k] < 1 || check != 1);
+	}
+	return 1;
+}
+
+float bank::get_money(int i)	//Получение кол-ва денег в конктреной ячейке
+{
+	if (i < count)
+		return money[i];
+	else
+		return -1;
+}
+
+int bank::putin(int i, float mon)	//Положить на счёт
+{
+	if (i < count)
+	{
+		money[i - 1] += mon;
+		return 1;
+	}
+	else
+		return -1;
+}
+
+int bank::getin(int i, float mon)	//Снять со счёта
+{
+	if (i < count) 
+	{
+		if (money[i - 1] >= mon)
+			money[i - 1] -= mon;
+		else
+			printf("Ошибка. Недостаточно денег в ячейке\n");
+		return 1;
+	}
+	else
+		return -1;
+}
+
+int bank::sum()		//Сумма денег на всех ячейках
+{
+	float summ;
+	for (int i = summ = 0; i < count; i++)
+	{
+		summ += money[i];
+	}
+	printf("Сумма денег во всех ячейках: %.2f\n", summ);
+	return 1;
+}
+
+int bank::print()	//Вывод информации по каждой ячейке
+{
+	for (int i = 0; i < count; i++)
+		printf("Ячейка %d: %.2f\n", i + 1, money[i]);
+	return 1;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "");
+	SetConsoleCP(1251);
+	int counti, check;	
+	printf("1. Использование пустого конструктора:\n");		//Вызов функций
+	bank a;
+	printf("2. Использование конструктора с параметрами:\n");
+	bank b(10);
+	printf("3. Получение и установка значений:\n");
+	b.set_count(10);
+	b.set_money();
+	printf("4. Функции работы с классом:\n");
+	b.putin(5, 10000.57);
+	b.getin(7, 10.48);
+	b.sum();
+	printf("5. Вывод класса:\n");
+	b.print();
+	printf("6. Деструкторы:\n");
+}
